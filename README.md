@@ -12,3 +12,14 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
+
+## Create GitHub Connection
+```bash
+aws codestar-connections create-connection --provider-type GitHub --connection-name aws-open-data-registry-neural-stack
+```
+
+```json
+{
+  "ConnectionArn": "arn:aws:codestar-connections:us-east-1:810526023897:connection/762bde48-8939-41bc-bab4-3bb9d48beac2"
+}
+```
