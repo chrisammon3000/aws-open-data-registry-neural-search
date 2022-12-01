@@ -18,8 +18,8 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 aws codestar-connections create-connection --provider-type GitHub --connection-name aws-open-data-registry-neural-stack
 ```
 
-```json
-{
-  "ConnectionArn": "arn:aws:codestar-connections:us-east-1:810526023897:connection/762bde48-8939-41bc-bab4-3bb9d48beac2"
-}
-```
+## To Do
+- [ ] Automate SecretsManager secrets creation for
+    - [ ] GitHub PAT
+    - [ ] EC2 KeyPair
+- [ ] Add SQS subscription to topic, use SQS fo lambda

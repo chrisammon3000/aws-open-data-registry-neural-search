@@ -1,0 +1,68 @@
+{
+    "Records": [
+        {
+            "messageId": "6c92cd45-690c-462a-8717-f6e44d90d3d3",
+            "receiptHandle": "AQEBK+8cJkZx881L4DhGrvqsGUo24/PMujF1sjF76P2ofyMY5LdYw7JNTBSapjWfZ5416fIS9C1u1c1poOE+GQN0YRj8jXR5xFgZXwcZkYzZToKL6lu+g8LGL/Gxi9Iip2H7TInQh77JwTiAOwN9MN5XTNKB8f4sSx11vhUpTiieblUl3LrvZBoAAWWRLxLwJGv25ZquFJIxO7qHv1Wetxx0A/VoQ7zIrMH5Wk/SmgWypX9ytwmsuFQOO9viCUBeVU9LLG5gFOEOi99+7dJyH1RaPFmoZ35MUrs6/7v6mTD60NOI7Vj64Ml7AuqziwIXid82Egia3VQqt3fbWWEyW5ccuuQvJZeimUlieHWyTjSBp+JmQbPzJU0bBz3gdzwkaFvj+7ONgI9xugIbl/BrYuMoH/QKE6NDkbPZWdD3UjkwXb5UAOrsnRUQpZH4PeBo/r8Q617FF8mq31RTThKrZ9Xgbmw9DFkj6zLPH2fKhDHRup4=",
+            "body": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2022-12-01T19:52:22.960Z\",\"eventName\":\"ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"AWS:AROA3ZNY5UDM2QXPTQLCY:1669924338540\"},\"requestParameters\":{\"sourceIPAddress\":\"10.196.15.100\"},\"responseElements\":{\"x-amz-request-id\":\"M6EW86QJ7HA9W3A4\",\"x-amz-id-2\":\"85OgbuFvg7kcAUcPpGqhNAHfFtvHY86CauZtQ/Z45HlNJufc+ICwLJF88n/CGzkQoDBKQvUPoV9lvvBC/e1InkydWu3P/WxX\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"NWUxMmQ0MDMtYThlZi00OWJiLWFmNTMtNzI2MjYzMWUxMTBm\",\"bucket\":{\"name\":\"awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\",\"ownerIdentity\":{\"principalId\":\"A16LB1071K2FJJ\"},\"arn\":\"arn:aws:s3:::awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\"},\"object\":{\"key\":\"data/awslabs/open-data-registry/datasets/encode-project.yaml\",\"size\":2738,\"eTag\":\"fe77e74c4fa31fa42929655b244efb2e\",\"sequencer\":\"00638905F6EB97075F\"}}}]}",
+            "attributes": {
+                "ApproximateReceiveCount": "3",
+                "SentTimestamp": "1669924344345",
+                "SenderId": "AIDAIT2UOQQY3AUEKVGXU",
+                "ApproximateFirstReceiveTimestamp": "1669924346572"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "bf30b13bf43159136aadede7ef3c8165",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:810526023897:AwsOpenDataRegistryNeuralSearchSt-DataIngestionLoadVdbQueue9D685001-3DW1lKEHV6Ka",
+            "awsRegion": "us-east-1"
+        },
+        {
+            "messageId": "750610af-2e75-404e-9217-b4ca411178b5",
+            "receiptHandle": "AQEBaVNpaWo7Svy0k/Rt11WKwNTlu4VpocNmzbMZvAtWKqCQ7nteEg0I96pfbgoK+LKEcK7NZGBA9bAFBLQ+/Raui7vsoDG+uSURBTFCLrrF4inOhQSF6YXYD9HcPLwARESSVYCJpewZplcPel99ZxAiYv2BBDdRFPR5R04gQ8Qxr5P3Ou7PbXtgMg002Uu+lPy/7eh3IH1yY8kjXXCSYEzIlApZxypzvjhGXdVd45nN0/xffdjhEyTh6ASZo6q55e+rXJEL1Wi25OtzUyAKgxIa0y1OcciKa8X0nSjBtyUR2IOm7ihiw9sRd3UVJh43xZFP4jOli8SDV2ry+5XWKisUI5pF7rVx6yvrqG6mEET3L1GCpJ8YoL5Yr0TGasOlGFe0KyWkN6Yb7vAtEEH9YrHLqzFKhd63fCMUFHJcYAhvip2MuJD0+QMJheOKDhZsTiHVjQmPRBZ+pbuiTnE61+VjAX73xM7MYf4m4S31aCLGm0g=",
+            "body": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2022-12-01T19:52:23.089Z\",\"eventName\":\"ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"AWS:AROA3ZNY5UDM2QXPTQLCY:1669924338540\"},\"requestParameters\":{\"sourceIPAddress\":\"10.196.15.100\"},\"responseElements\":{\"x-amz-request-id\":\"2XMMQJMVTJKCRS02\",\"x-amz-id-2\":\"3UBudzZfqIzXpo7j30480Bv8DjBnPq3DJHLCSASs2/sem58rDbVy5DH5NCW08tvUapvU3BFWFe83GujsZKzI00SPkhHVaJYP\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"NWUxMmQ0MDMtYThlZi00OWJiLWFmNTMtNzI2MjYzMWUxMTBm\",\"bucket\":{\"name\":\"awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\",\"ownerIdentity\":{\"principalId\":\"A16LB1071K2FJJ\"},\"arn\":\"arn:aws:s3:::awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\"},\"object\":{\"key\":\"data/awslabs/open-data-registry/datasets/fashionlocaltriplets.yaml\",\"size\":582,\"eTag\":\"8c93513b233b20823db1e0c0693599ae\",\"sequencer\":\"00638905F712D849B3\"}}}]}",
+            "attributes": {
+                "ApproximateReceiveCount": "3",
+                "SentTimestamp": "1669924344347",
+                "SenderId": "AIDAIT2UOQQY3AUEKVGXU",
+                "ApproximateFirstReceiveTimestamp": "1669924346572"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "63e575829772b875e2107c674f5a9da9",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:810526023897:AwsOpenDataRegistryNeuralSearchSt-DataIngestionLoadVdbQueue9D685001-3DW1lKEHV6Ka",
+            "awsRegion": "us-east-1"
+        },
+        {
+            "messageId": "92af78ed-6ed6-4963-87d5-c9f607d77d7e",
+            "receiptHandle": "AQEBNEznM2FW4aghooMKvTmIr6n9OgGPQfQjz9TRZghOp9es0eOO+gMYp0UfB2waiGmUg14+Jt7XTrGplz+w/6Bs1kz1+HrE4KcXcMMt2hgowfeVIFfYVjMsMW4C1cVTk1rWVSGKHgySV0iIq1jgCewyJW7qmjq1NhCIrwyKoBoiHgATHFj5808jg8WTJSZhtsaLLMg6PyvT0cm6BwOB5RwyOSPwK4P84pwTpfIIX87TWpPri567tRusf8DeVuXFN38bmT6BRNtsdh/rNTuwJ8J4fHgs8FCh1mNMeDtrStOq6mMHBA6+L6PVGTy2JGMjw7+VPUd34i+7SiqvQhacPNj/wHK6rEGSv7EPlFUgbncRUzegqO0jGt61uwK0NCjeLQmNsJIRPdeotZoaXwU6IQte8FItuqCuy3EwOAH/bIHXTLZAUsDEhR79vJOPRfmt/BOGpoCKUNMJcCSapUoKrtO0PX2VVdWgn9GIoqDSOIF9c68=",
+            "body": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2022-12-01T19:52:22.793Z\",\"eventName\":\"ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"AWS:AROA3ZNY5UDM2QXPTQLCY:1669924338540\"},\"requestParameters\":{\"sourceIPAddress\":\"10.196.15.100\"},\"responseElements\":{\"x-amz-request-id\":\"M6EY2BF2Z6D6GEGW\",\"x-amz-id-2\":\"2LRNQ2riHNcJkcuEvYAk/ADTpOvaLt/5G4/OsaeyuFlVzxC1gk54X5E0FuyfuCClDryEJ8pzTR36vHcQ8u8njrgQtSymQoah\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"NWUxMmQ0MDMtYThlZi00OWJiLWFmNTMtNzI2MjYzMWUxMTBm\",\"bucket\":{\"name\":\"awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\",\"ownerIdentity\":{\"principalId\":\"A16LB1071K2FJJ\"},\"arn\":\"arn:aws:s3:::awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\"},\"object\":{\"key\":\"data/awslabs/open-data-registry/datasets/dmspssj.yaml\",\"size\":1500,\"eTag\":\"d67b284e870b9a04d475e00dddc6e5ae\",\"sequencer\":\"00638905F6BC57CD16\"}}}]}",
+            "attributes": {
+                "ApproximateReceiveCount": "3",
+                "SentTimestamp": "1669924344374",
+                "SenderId": "AIDAIT2UOQQY3AUEKVGXU",
+                "ApproximateFirstReceiveTimestamp": "1669924346572"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "35c793d73d0896cc4cf185ee891e69af",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:810526023897:AwsOpenDataRegistryNeuralSearchSt-DataIngestionLoadVdbQueue9D685001-3DW1lKEHV6Ka",
+            "awsRegion": "us-east-1"
+        },
+        {
+            "messageId": "cdde52ea-a77e-44c6-9167-ca3836c73b5b",
+            "receiptHandle": "AQEBmVIKRLxchi18TXSsCAfGszrCmjaBBUXLgJTZ2ghHpSxLVQLPJITnSlY5ZHx/yMLJk3o8cwktYWsEopJY8UIyJQgJkg5qY/QjF2EPMcL+HqKPEC5vWs8WQlrbidemAVH4MpKvZco8JGeY2RwHxMMF96YBQZBgT/1/xZ9gnGf2ASk1nPMfhbRnGt+X/Smgpkz5Sf5nS6rI5ABamafdpj3YI7EsGvanwog05xjkQvf3bn3oULb8w2X21u0dwHpn1mzBGUG9f3t4zo6TznhTpUJVbuWLKbs/3xOaPumVeP+XUAAgUcWwAWGgh1ZHoSt0GrjYhxa0OmdyWv9LITK9asZCXD6H7LU+oysAJdrwyBjJ8m+RSRfN7nwmhggXzxL4LISceBMvbdCgIzIAQCNMiJNjdtog5MF+XZ8IhKWxg5stJSE6ekIYhFHhs+hBGlSx4q5BtKfC6KkOR1qRXIzBw+BFqubtGlYweE3HUmHp+nTIkjQ=",
+            "body": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2022-12-01T19:52:23.750Z\",\"eventName\":\"ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"AWS:AROA3ZNY5UDM2QXPTQLCY:1669924338540\"},\"requestParameters\":{\"sourceIPAddress\":\"10.196.15.100\"},\"responseElements\":{\"x-amz-request-id\":\"2XMXF1HWEYZBAAB6\",\"x-amz-id-2\":\"/L0yi6NiTnfAQW0IfB8D9VG1P7n4+Wzxkjl6UDeZ9N/RLMujILs9mHf6vCvfp0ky4dTAvuAZeuUXjHJIswtHVbwHwqYW4rCK\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"NWUxMmQ0MDMtYThlZi00OWJiLWFmNTMtNzI2MjYzMWUxMTBm\",\"bucket\":{\"name\":\"awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\",\"ownerIdentity\":{\"principalId\":\"A16LB1071K2FJJ\"},\"arn\":\"arn:aws:s3:::awsopendataregistryneura-dataingestiondatabucket1-zm8vbma135v3\"},\"object\":{\"key\":\"data/awslabs/open-data-registry/datasets/gnomad-data-lakehouse-ready.yaml\",\"size\":1776,\"eTag\":\"819be630eb68d20ffa358886d7a6f570\",\"sequencer\":\"00638905F7B7B8572C\"}}}]}",
+            "attributes": {
+                "ApproximateReceiveCount": "3",
+                "SentTimestamp": "1669924344378",
+                "SenderId": "AIDAIT2UOQQY3AUEKVGXU",
+                "ApproximateFirstReceiveTimestamp": "1669924346572"
+            },
+            "messageAttributes": {},
+            "md5OfBody": "451564f5a6958ec2f4ddeff9f7820d94",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:us-east-1:810526023897:AwsOpenDataRegistryNeuralSearchSt-DataIngestionLoadVdbQueue9D685001-3DW1lKEHV6Ka",
+            "awsRegion": "us-east-1"
+        }
+    ]
+}

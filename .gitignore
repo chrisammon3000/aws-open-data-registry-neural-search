@@ -9,3 +9,4 @@ cdk.out
 
 # Project files
 .env
+*.pem
