@@ -60,13 +60,20 @@ export class VectorDatabase extends Construct {
         // TODO add EIP
         const instance = new ec2.Instance(this, 'VectorDatabase', {
             vpc,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
             machineImage: ami,
             securityGroup,
             keyName: 'aws-open-data-registry-neural-search-key-pair',
             role,
-            instanceName: 'aws-odr-vector-database'
+            instanceName: 'aws-odr-vector-database',
+            blockDevices: [{
+                deviceName: '/dev/xvda',
+                volume: ec2.BlockDeviceVolume.ebs(50)
+            }]
         });
+
+        // add an ebs volume to the instance
+
 
         const userData = new Asset(this, 'UserData', {
             path: path.join(__dirname, '../src/config.sh')
