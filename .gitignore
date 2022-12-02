@@ -10,3 +10,5 @@ cdk.out
 # Project files
 .env
 *.pem
+___*
+.vscode
