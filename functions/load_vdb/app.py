@@ -1,6 +1,6 @@
+import os
 import logging
 import json
-import yaml
 import weaviate
 
 logger = logging.getLogger()
@@ -10,14 +10,11 @@ def lambda_handler(event, context):
 
     logger.info(json.dumps(event))
 
-    # process event
-    for event_record in event['Records']:
-        messages = json.loads(event_record['Sns']['Message'])
-        for message in messages['Records']:
-            print(message)
+    # # process event
+    # for record in event['Records']:
+    #     print("message")
 
-
-
+    #     data = json.loads(record['body'])
 
             # logger.info(sns_message)
 
@@ -41,7 +38,8 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
 
     # open a json file
-    with open('./functions/load_vdb/event.json') as file:
+    path = os.path.join(os.path.dirname(__file__), 'event.json')
+    with open(path) as file:
         event = json.load(file)
     context = ""
     lambda_handler(event, context)
