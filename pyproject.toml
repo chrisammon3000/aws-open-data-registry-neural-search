@@ -12,6 +12,7 @@ python = "^3.9"
 weaviate-client = "^3.9.0"
 pyyaml = "^6.0"
 boto3 = "^1.26.21"
+pandas = "^1.5.2"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.17.1"

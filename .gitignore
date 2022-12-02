@@ -12,3 +12,4 @@ cdk.out
 *.pem
 ___*
 .vscode
+*.ipynb_checkpoints
