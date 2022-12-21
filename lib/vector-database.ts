@@ -58,6 +58,7 @@ export class VectorDatabase extends Construct {
         });
 
         // TODO add EIP
+        // TODO add an ebs volume to the instance
         const instance = new ec2.Instance(this, 'VectorDatabase', {
             vpc,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
@@ -71,9 +72,6 @@ export class VectorDatabase extends Construct {
                 volume: ec2.BlockDeviceVolume.ebs(50)
             }]
         });
-
-        // add an ebs volume to the instance
-
 
         const userData = new Asset(this, 'UserData', {
             path: path.join(__dirname, '../src/config.sh')

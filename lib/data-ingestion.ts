@@ -99,7 +99,7 @@ export class DataIngestion extends Construct {
         });
 
         const loadVdbQueueSubscription = new SqsSubscription(loadVdbQueue, {
-            rawMessageDelivery: false
+            rawMessageDelivery: true
         });
         dataIngestionTopic.addSubscription(loadVdbQueueSubscription);
 
