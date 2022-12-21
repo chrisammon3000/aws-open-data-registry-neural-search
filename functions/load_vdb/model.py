@@ -29,32 +29,33 @@ class JsonToWeaviate:
         self._build()
 
     def _build(self):
-        self.objects = UnmarshalledJson()
+        self.classes = UnmarshalledJson()
         self._build_objects()
-        self.references = UnmarshalledJson()
         self._build_references()
 
     def _build_objects(self):
         for map in self._mappings:
-            setattr(self.objects, map["class"], UnmarshalledJson())
+            setattr(self.classes, map["class"], UnmarshalledJson())
             if not map["path"]:
                 expr = f"[{{{', '.join([f'{k}: {v}' for k, v in map['substitutions'].items()])}}}]"
             else:
                 expr = f"map(&{{{', '.join([f'{k}: {v}' for k, v in map['substitutions'].items()])}}}, {map['path']})"
             setattr(
-                getattr(self.objects, map["class"]),
-                "data",
+                getattr(self.classes, map["class"]),
+                "data_objects",
                 self.build_weaviate_object(map["class"], expr, self.input)
             )
-            ids = [item["id"] for item in getattr(self.objects, map["class"]).data]
+            ids = [item["id"] for item in getattr(getattr(self.classes, map["class"]), "data_objects")]
 
             # set ids
             if len(ids) == 1:
-                setattr(getattr(self.objects, map["class"]), "id", ids[0])
+                setattr(getattr(self.classes, map["class"]), "id", ids[0])
             else:
-                setattr(getattr(self.objects, map["class"]), "ids", ids)
+                setattr(getattr(self.classes, map["class"]), "ids", ids)
 
     def _build_references(self):
+        for ref_spec in self._references:
+            setattr(getattr(self.classes, ref_spec["fromClass"]), "references", UnmarshalledJson())
         for ref_spec in self._references:
             # # request reference
             # client.data_object.reference.add(
@@ -64,19 +65,19 @@ class JsonToWeaviate:
             #     from_class_name='Author', # ONLY with Weaviate >= 1.14.0
             #     to_class_name='Book', # ONLY with Weaviate >= 1.14.0
             # )
-            if hasattr(getattr(self.objects, ref_spec["toClass"]), 'id'):
-                to_uuids = [getattr(getattr(self.objects, ref_spec["toClass"]), 'id')]
-            elif hasattr(getattr(self.objects, ref_spec["toClass"]), 'ids'):
-                to_uuids = getattr(getattr(self.objects, ref_spec["toClass"]), 'ids')
+            if hasattr(getattr(self.classes, ref_spec["toClass"]), 'id'):
+                to_uuids = [getattr(getattr(self.classes, ref_spec["toClass"]), 'id')]
+            elif hasattr(getattr(self.classes, ref_spec["toClass"]), 'ids'):
+                to_uuids = getattr(getattr(self.classes, ref_spec["toClass"]), 'ids')
 
             ref = [ {
-                "from_uuid": getattr(self.objects, ref_spec["fromClass"]).id,
+                "from_uuid": getattr(self.classes, ref_spec["fromClass"]).id,
                 "from_property_name": ref_spec["property"],
                 "to_uuid": to_uuid,
                 "from_class_name": ref_spec["fromClass"],
                 "to_class_name": ref_spec["toClass"],
             } for to_uuid in to_uuids ]
-            setattr(self.references, ref_spec["property"], ref)
+            setattr(getattr(getattr(self.classes, ref_spec["fromClass"]), "references"), ref_spec["property"], ref)
         
 
     @staticmethod
