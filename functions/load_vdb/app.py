@@ -10,6 +10,9 @@ def lambda_handler(event, context):
 
     logger.info(json.dumps(event))
 
+    for record in event['Records']:
+        data = json.loads(record['body'])
+
     # # process event
     # for record in event['Records']:
     #     print("message")
@@ -36,9 +39,10 @@ def lambda_handler(event, context):
     return
 
 if __name__ == "__main__":
+    from pathlib import Path
 
     # open a json file
-    path = os.path.join(os.path.dirname(__file__), 'event.json')
+    path = Path(__file__).parent / "event.json"
     with open(path) as file:
         event = json.load(file)
     context = ""
