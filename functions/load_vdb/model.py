@@ -22,16 +22,28 @@ class UnmarshalledJson:
 
 # Automatically assembles models from json mappings but needs to use jmespath
 class JsonToWeaviate:
-    def __init__(self, data: dict, mappings: dict, references: dict) -> None:
-        self._input = UnmarshalledJson(**data)
+    def __init__(self, mappings: dict, references: dict = None, data: dict = None) -> None:
+        self._input = UnmarshalledJson(**data) if data else None
         self._mappings = mappings
         self._references = references
-        self._build()
+
+        if self._input is not None:
+            self._build()
+
+    @classmethod
+    def from_json(cls, obj, data: str, mappings: str = None, references: str = None):
+        return cls(
+            mappings=mappings or obj._mappings,
+            references=references or obj._references,
+            data=data
+        )
 
     def _build(self):
         self.classes = UnmarshalledJson()
         self._build_objects()
-        self._build_references()
+
+        if self._references is not None:
+            self._build_references()
 
     def _build_objects(self):
         for map in self._mappings:
@@ -95,22 +107,12 @@ class JsonToWeaviate:
 if __name__ == "__main__":
     from pathlib import Path
 
-    # path = Path(__file__).parent.parent.parent / "___schema.json"
-    # with open(path) as file:
-    #     schema = json.load(file)
-
     # open a json file
     path = Path(__file__).parent / "event.json"
     with open(path) as file:
         event = json.load(file)
 
     data = json.loads(event["Records"][0]["body"])["data"]
-
-    # expr_map = {
-    #     "Dataset": "[{name: Name, desc: Description, documentaion: Documentation, updateFrequency: UpdateFrequency, license: License}]",
-    #     "list_of_values": "map(&{name: @}, Tags)",
-    #     "list_of_objects": "map(&{arn: @.ARN, region: @.region, }, Resources)",
-    # }
 
     mappings = [
         {
@@ -166,6 +168,7 @@ if __name__ == "__main__":
         },
     ]
 
-    req = JsonToWeaviate(data, mappings, references)
+    factory = JsonToWeaviate(mappings, references)
+    builder = JsonToWeaviate.from_json(factory, data)
 
     print("")
