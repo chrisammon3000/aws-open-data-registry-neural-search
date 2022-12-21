@@ -31,10 +31,8 @@ class JsonToWeaviate:
     def _build(self):
         self.objects = UnmarshalledJson()
         self._build_objects()
-        # set id or ids
-
-        # self.references = UnmarshalledJson()
-        # self._build_references()
+        self.references = UnmarshalledJson()
+        self._build_references()
 
     def _build_objects(self):
         for map in self._mappings:
@@ -49,14 +47,16 @@ class JsonToWeaviate:
                 self.build_weaviate_object(map["class"], expr, self.input)
             )
             ids = [item["id"] for item in getattr(self.objects, map["class"]).data]
+
+            # set ids
             if len(ids) == 1:
                 setattr(getattr(self.objects, map["class"]), "id", ids[0])
             else:
                 setattr(getattr(self.objects, map["class"]), "ids", ids)
 
     def _build_references(self):
-        for ref in self._references:
-            # # shape reference
+        for ref_spec in self._references:
+            # # request reference
             # client.data_object.reference.add(
             #     from_uuid='e067f671-1202-42c6-848b-ff4d1eb804ab',
             #     from_property_name='wroteBooks',
@@ -64,8 +64,19 @@ class JsonToWeaviate:
             #     from_class_name='Author', # ONLY with Weaviate >= 1.14.0
             #     to_class_name='Book', # ONLY with Weaviate >= 1.14.0
             # )
+            if hasattr(getattr(self.objects, ref_spec["toClass"]), 'id'):
+                to_uuids = [getattr(getattr(self.objects, ref_spec["toClass"]), 'id')]
+            elif hasattr(getattr(self.objects, ref_spec["toClass"]), 'ids'):
+                to_uuids = getattr(getattr(self.objects, ref_spec["toClass"]), 'ids')
 
-            pass
+            ref = [ {
+                "from_uuid": getattr(self.objects, ref_spec["fromClass"]).id,
+                "from_property_name": ref_spec["property"],
+                "to_uuid": to_uuid,
+                "from_class_name": ref_spec["fromClass"],
+                "to_class_name": ref_spec["toClass"],
+            } for to_uuid in to_uuids ]
+            setattr(self.references, ref_spec["property"], ref)
         
 
     @staticmethod
