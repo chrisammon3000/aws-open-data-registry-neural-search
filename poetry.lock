@@ -1311,7 +1311,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b1c007d65943a8fc21b3327eb0cc3cc634405617237f5bd79927a518610535fc"
+content-hash = "121f6b999e708d8516690599698041eafa2e99a44458f1afb8468821dac73892"
 
 [metadata.files]
 anyio = [
