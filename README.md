@@ -33,7 +33,6 @@ Sensitive environment variables containing secrets like passwords and API keys m
 
 Create a `.env` file in the project root.
 ```bash
-GITHUB_TOKEN=<token>
 REPO_URL=https://github.com/awslabs/open-data-registry
 ```
 
@@ -77,6 +76,17 @@ poetry shell
 ```
 
 ## Usage
+
+### Docker
+Build the application.
+```bash
+cd tasks/load-odr
+docker build -t load-odr:latest .
+```
+Run the application.
+```bash
+docker run -d --env-file ../.env load-odr:latest
+```
 
 <!-- ### Network Configuration
 The only required variable for network configuration is the SUBNET_ID variable which must be present in `.env`. -->

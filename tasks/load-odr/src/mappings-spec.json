@@ -1,0 +1,63 @@
+[
+    {
+        "class": "Dataset",
+        "path": null,
+        "substitutions": {
+            "name": "Name",
+            "description": "Description",
+            "documentation": "Documentation",
+            "updateFrequency": "UpdateFrequency",
+            "license": "License",
+            "tags": "Tags | join(',',@)"
+        }
+    },
+    {
+        "class": "Publisher",
+        "path": null,
+        "substitutions": {
+            "name": "ManagedBy",
+            "contact": "Contact"
+        }
+    },
+    {
+        "class": "Resource",
+        "path": "Resources",
+        "substitutions": {
+            "arn": "@.ARN",
+            "region": "@.Region",
+            "description": "@.Description",
+            "type": "@.Type"
+        }
+    },
+    {
+        "class": "Tutorial",
+        "path": "DataAtWork.Tutorials",
+        "substitutions": {
+            "title": "@.Title",
+            "url": "@.URL",
+            "authorName": "@.AuthorName",
+            "authorUrl": "@.AuthorURL",
+            "services": "to_string(@.Services)"
+        }
+    },
+    {
+        "class": "Publication",
+        "path": "DataAtWork.Publications",
+        "substitutions": {
+            "title": "@.Title",
+            "url": "@.URL",
+            "authorName": "@.AuthorName",
+            "authorUrl": "@.AuthorURL"
+        }
+    },
+    {
+        "class": "ToolOrApplication",
+        "path": "DataAtWork.\"Tools & Applications\"",
+        "substitutions": {
+            "title": "@.Title",
+            "url": "@.URL",
+            "authorName": "@.AuthorName",
+            "authorUrl": "@.AuthorURL"
+        }
+    }
+]
