@@ -6,14 +6,23 @@ import yaml
 import json
 from jsonviate import JsonToWeaviate
 import weaviate
+import boto3
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
+AWS_REGION = os.environ["AWS_REGION"]
 REPO_URL = os.environ["REPO_URL"]
 TARGET_DATA_DIR = os.environ["TARGET_DATA_DIR"]
+WEAVIATE_ENDPOINT_SSM_PARAM = os.environ["WEAVIATE_ENDPOINT_SSM_PARAM"]
+
+ssm = boto3.client('ssm')
+WEAVIATE_ENDPOINT = ssm.get_parameter(Name=WEAVIATE_ENDPOINT_SSM_PARAM, WithDecryption=False)['Parameter']['Value']
+
 data_dir = Path(".")
-WEAVIATE_ENDPOINT = os.environ["WEAVIATE_ENDPOINT"]
+
+# fix
+logger.info(f"Environment variables:\nREPO_URL: {REPO_URL}\nTARGET_DATA_DIR: {TARGET_DATA_DIR}\nWEAVIATE_ENDPOINT: {WEAVIATE_ENDPOINT}")
 
 # configure the batch settings
 client = weaviate.Client(WEAVIATE_ENDPOINT)

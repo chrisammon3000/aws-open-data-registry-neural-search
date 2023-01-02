@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
     git \
     python3-pip
 
-ENV GITHUB_TOKEN=""
 ENV REPO_URL=""
 ENV TARGET_DATA_DIR=""
 ENV WEAVIATE_ENDPOINT=""
