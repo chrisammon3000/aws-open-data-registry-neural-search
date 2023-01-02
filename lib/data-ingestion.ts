@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 
 export interface DataIngestionProps {
@@ -21,6 +21,16 @@ export class DataIngestion extends Construct {
             memoryLimitMiB: 2048,
             cpu: 512
         });
+
+        // add SSM GetParameter permissions to the task role for all resources
+        taskDefinition.taskRole.attachInlinePolicy(new iam.Policy(this, 'OdrDataIngestionTaskRolePolicy', {
+            statements: [
+                new iam.PolicyStatement({
+                    actions: ['ssm:GetParameter'],
+                    resources: ['*']
+                })
+            ]
+        }));
 
         // add a container to the task definition from local Dockerfile
         taskDefinition.addContainer('OdrDataIngestionApp', {

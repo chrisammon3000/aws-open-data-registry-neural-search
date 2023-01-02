@@ -117,7 +117,7 @@ export class VectorDatabase extends Construct {
         });
 
         // Create an SSM paramter with the path `/OdrNeuralSearch/${AWS_REGION}/WeaviateEndpoint
-        const endpointValue = `http://${instance.instancePublicIp}:8080`
+        const endpointValue = `http://${eip.attrPublicIp}:8080`
         const endpointSsmParam = new ssm.StringParameter(this, 'WeaviateEndpoint', {
             parameterName: `/OdrNeuralSearch/${cdk.Aws.REGION}/Endpoint`,
             simpleName: false,

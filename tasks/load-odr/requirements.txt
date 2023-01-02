@@ -1,3 +1,4 @@
 weaviate-client
 pyyaml
 jmespath
+boto3

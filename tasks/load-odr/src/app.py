@@ -25,7 +25,8 @@ data_dir = Path(".")
 logger.info(f"Environment variables:\nREPO_URL: {REPO_URL}\nTARGET_DATA_DIR: {TARGET_DATA_DIR}\nWEAVIATE_ENDPOINT: {WEAVIATE_ENDPOINT}")
 
 # configure the batch settings
-client = weaviate.Client(WEAVIATE_ENDPOINT)
+# client = weaviate.Client(WEAVIATE_ENDPOINT)
+client = weaviate.Client("http://3.211.96.210:8080")
 client.batch.configure(
     batch_size=100,
     dynamic=False,
@@ -83,8 +84,6 @@ if __name__ == "__main__":
             try:
                 # while client.batch.shape
                 mapper = JsonToWeaviate.from_json(factory, file)
-
-                
 
                 # add data objects
                 for data_object in mapper.data_objects:

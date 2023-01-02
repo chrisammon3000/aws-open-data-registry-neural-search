@@ -11,5 +11,5 @@ pip3 install docker-compose
 sudo systemctl enable docker.service
 sudo systemctl start docker.service
 git clone https://github.com/abk7777/aws-open-data-registry-neural-search.git /opt/app
-cd /opt/app/aws-open-data-registry-neural-search
+cd /opt/app
 docker-compose up -d

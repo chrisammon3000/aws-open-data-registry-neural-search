@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
 
 ENV REPO_URL=""
 ENV TARGET_DATA_DIR=""
-ENV WEAVIATE_ENDPOINT=""
+ENV WEAVIATE_ENDPOINT_SSM_PARAM=""
 
 WORKDIR /opt/app
 
