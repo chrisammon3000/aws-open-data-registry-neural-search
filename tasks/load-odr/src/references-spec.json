@@ -1,0 +1,27 @@
+[
+    {
+        "fromClass": "Dataset",
+        "toClass": "Publisher",
+        "property": "managedBy"
+    },
+    {
+        "fromClass": "Dataset",
+        "toClass": "Tag",
+        "property": "hasTag"
+    },
+    {
+        "fromClass": "Dataset",
+        "toClass": "Resource",
+        "property": "hasResource"
+    },
+    {
+        "fromClass": "Dataset",
+        "toClass": "Tutorial",
+        "property": "hasTutorial"
+    },
+    {
+        "fromClass": "Tutorial",
+        "toClass": "Service",
+        "property": "usesService"
+    }
+]
