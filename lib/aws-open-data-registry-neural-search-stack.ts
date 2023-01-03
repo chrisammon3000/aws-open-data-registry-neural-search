@@ -15,12 +15,10 @@ export class AwsOpenDataRegistryNeuralSearchStack extends cdk.Stack {
         repoUrl: process.env.REPO_URL!,
         targetDataDirectory: process.env.TARGET_DATA_DIR!,
         vpc: vectorDatabase.vpc,
-        endpointSsmParamName: vectorDatabase.endpointSsmParamName,
+        endpointSsmParamName: vectorDatabase.endpointSsmParamName
     };
 
-    // add the vpc to the data ingestion params
     const dataIngestion = new DataIngestion(this, 'DataIngestion', dataIngestionParams);
-
     dataIngestion.node.addDependency(vectorDatabase);
 
   }

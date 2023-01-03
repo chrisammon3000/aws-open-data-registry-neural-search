@@ -9,11 +9,12 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 export class VectorDatabase extends Construct {
     public readonly vpc: ec2.IVpc;
     public readonly endpointSsmParamName: string;
+    public readonly loadOdrTaskSecurityGroup: ec2.ISecurityGroup;
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
         // can move networking resources to a separate construct later; allow DNS resolution
-        const vpc = new ec2.Vpc(this, 'VPC', {
+        this.vpc = new ec2.Vpc(this, 'VPC', {
             natGateways: 0,
             subnetConfiguration: [{
                 name: 'Vpc',
@@ -24,12 +25,7 @@ export class VectorDatabase extends Construct {
             enableDnsSupport: true
         });
 
-        // Fargate load task security group
-        const loadOdrTaskSecurityGroup = new ec2.SecurityGroup(this, 'LoadOdrTaskSecurityGroup', {
-            vpc,
-            allowAllOutbound: true,
-            description: 'Allow SSH (TCP port 22) in',
-        });
+        const vpc = this.vpc
 
         // Weaviate instance security group
         const securityGroup = new ec2.SecurityGroup(this, 'VectorDatabaseSecurityGroup', {
@@ -40,27 +36,7 @@ export class VectorDatabase extends Construct {
         
         // add the load task security group to the weaviate security group
         securityGroup.addIngressRule(
-            loadOdrTaskSecurityGroup,
-            ec2.Port.tcp(8080),
-            'Allow Weaviate access');
-
-        securityGroup.addIngressRule(
-            ec2.Peer.ipv4('209.65.62.26/32'), 
-            ec2.Port.tcp(22),
-            'Allow SSH (TCP port 22) in');
-
-        securityGroup.addIngressRule(
-            ec2.Peer.ipv4('209.65.62.26/32'), 
-            ec2.Port.tcp(8080),
-            'Allow Weaviate access');
-
-        securityGroup.addIngressRule(
-            ec2.Peer.ipv4('108.210.70.169/32'), 
-            ec2.Port.tcp(22),
-            'Allow SSH (TCP port 22) in');
-
-        securityGroup.addIngressRule(
-            ec2.Peer.ipv4('108.210.70.169/32'), 
+            ec2.Peer.ipv4('0.0.0.0/0'),
             ec2.Port.tcp(8080),
             'Allow Weaviate access');
 
@@ -76,7 +52,6 @@ export class VectorDatabase extends Construct {
             cpuType: ec2.AmazonLinuxCpuType.X86_64
         });
 
-        // TODO add an ebs volume to the instance
         const instance = new ec2.Instance(this, 'VectorDatabase', {
             vpc,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
@@ -123,7 +98,7 @@ export class VectorDatabase extends Construct {
             simpleName: false,
             stringValue: endpointValue
         });
-        const endpointSsmParamName = endpointSsmParam.parameterName
+        this.endpointSsmParamName = endpointSsmParam.parameterName
         new cdk.CfnOutput(this, 'VectorDatabaseEndpoint', { value: endpointValue });   
     }
 }
