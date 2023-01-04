@@ -16,9 +16,12 @@ REPO_URL = os.environ["REPO_URL"]
 TARGET_DATA_DIR = os.environ["TARGET_DATA_DIR"]
 WEAVIATE_ENDPOINT_SSM_PARAM = os.environ["WEAVIATE_ENDPOINT_SSM_PARAM"]
 
-ssm = boto3.client('ssm')
-WEAVIATE_ENDPOINT = ssm.get_parameter(Name=WEAVIATE_ENDPOINT_SSM_PARAM, WithDecryption=False)['Parameter']['Value']
-
+try:
+    ssm = boto3.client('ssm')
+    WEAVIATE_ENDPOINT = ssm.get_parameter(Name=WEAVIATE_ENDPOINT_SSM_PARAM, WithDecryption=False)['Parameter']['Value']
+except:
+    WEAVIATE_ENDPOINT = os.environ["WEAVIATE_ENDPOINT"]
+    
 data_dir = Path(".")
 
 # fix
@@ -85,13 +88,13 @@ if __name__ == "__main__":
                 # while client.batch.shape
                 mapper = JsonToWeaviate.from_json(factory, file)
 
-                # add data objects
-                for data_object in mapper.data_objects:
-                    batch.add_data_object(
-                        data_object["data"],
-                        class_name=data_object["class"],
-                        uuid=data_object["id"],
-                    )
+                # # add data objects
+                # for data_object in mapper.data_objects:
+                #     batch.add_data_object(
+                #         data_object["data"],
+                #         class_name=data_object["class"],
+                #         uuid=data_object["id"],
+                #     )
 
                 # add cross references
                 for cross_reference in mapper.cross_references:
