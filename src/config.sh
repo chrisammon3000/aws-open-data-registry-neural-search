@@ -4,7 +4,7 @@
 yum update -y
 yum install git docker -y
 usermod -a -G docker ec2-user
-usermod -a -G docker ssm-user
+# usermod -a -G docker ssm-user
 id ec2-user
 newgrp docker
 pip3 install docker-compose
