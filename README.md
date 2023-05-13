@@ -1,47 +1,118 @@
 # aws-open-data-registry-neural-search
-
 Semantic search of AWS Open Data Registry datasets using Weaviate.
 
-*Please Note: This project is in development but you can deploy the Weaviate instance from the main branch following the Quickstart.*
-
 ## Table of Contents
+- [aws-open-data-registry-neural-search](#aws-open-data-registry-neural-search)
+  - [Table of Contents](#table-of-contents)
+  - [Project Structure](#project-structure)
+  - [Description](#description)
+  - [Quickstart](#quickstart)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Environment Variables](#environment-variables)
+    - [CDK Application Configuration](#cdk-application-configuration)
+    - [AWS Credentials](#aws-credentials)
+    - [Jupyter Notebook Setup](#jupyter-notebook-setup)
+    - [Python Development](#python-development)
+  - [Usage](#usage)
+    - [Makefile Usage](#makefile-usage)
+    - [Docker](#docker)
+    - [AWS Deployment](#aws-deployment)
+    - [CDK Commands](#cdk-commands)
+  - [Troubleshooting](#troubleshooting)
+  - [References \& Links](#references--links)
+  - [Authors](#authors)
+
+## Project Structure
+```bash
+.
+├── Makefile
+├── README.md
+├── (aws-open-data-registry-neural-search-key-pair.pem)
+├── bin
+├── cdk.context.json
+├── cdk.json
+├── config.json
+├── frontend
+├── jest.config.js
+├── lib
+├── notebooks
+├── package.json
+├── requirements.txt
+├── scripts
+│   └── delete_schema.sh
+├── src
+│   └── config.sh
+├── tasks
+│   └── load_odr
+├── test
+└── tsconfig.json
+```
 
 ## Description
-Deploy and load a Weaviate instance with [AWS Open Data Registry](https://registry.opendata.aws/) datasets. Find datasets, tutorials, publications and tools & applications using semantic search and natural language processing queries.
+Deploy and load a Weaviate instance with [AWS Open Data Registry](https://registry.opendata.aws/) datasets. Find datasets, tutorials, publications and tools & applications using semantic search and natural language processing queries using the Streamlit app.
+
+<!-- TODO ### Architecture -->
 
 ## Quickstart
 1. Configure your AWS credentials.
 2. Add environment variables to `.env`.
-3. Run `npm install` to install TypeScript dependencies.
-4. Run `cdk deploy` to deploy the cluster.
+3. Update `config.json` if desired.
+4. Run `npm install` to install TypeScript dependencies.
+5. Run `make deploy` to deploy the app.
+6. Run `make job.run` to load the database.
+<!-- TODO 7. Start the Streamlit app to search records. -->
 
 ## Installation
 Follow the steps to configure the deployment environment.
 
 ### Prerequisites
+* Docker
 * Nodejs >= 18.0.0
 * TypeScript >= 4.4.3
 * AWS CDK >= 2.53.0
-* Poetry
-* Python 3.9
+* Python 3.10
 * AWSCLI
 * jq
 
 ### Environment Variables
-
 Sensitive environment variables containing secrets like passwords and API keys must be exported to the environment first.
 
 Create a `.env` file in the project root.
 ```bash
-REPO_URL=https://github.com/awslabs/open-data-registry
+CDK_DEFAULT_ACCOUNT=<account_id>
+CDK_DEFAULT_REGION=<region>
+WEAVIATE_ENDPOINT=<hostname>
 ```
 
 ***Important:*** *Always use a `.env` file or AWS SSM Parameter Store or Secrets Manager for sensitive variables like credentials and API keys. Never hard-code them, including when developing. AWS will quarantine an account if any credentials get accidentally exposed and this will cause problems.*
 
 ***Make sure that `.env` is listed in `.gitignore`***
 
-#### GitHub Personal Access token
-To allow the application to access the AWS Open Data Registry GitHub repository, a personal access token must be created and added to the `.env` file. The token must have permissions for the `repo` scope.
+### CDK Application Configuration
+The CDK application configuration is stored in `config.json`. This file contains values for the database layer, the data ingestion layer, and tags. You can update the tags and SSH IP to your own values before deploying.
+```json
+{
+    "layers": {
+        "data_ingestion": {
+            "env": {
+                "repo_url": "https://github.com/awslabs/open-data-registry",
+                "target_data_dir": "datasets"
+            }
+        },
+        "vector_database": {
+            "env": {
+                "ssh_cidr": "0.0.0.0/0", // Update to your IP
+                "ssh_key_name": "aws-open-data-registry-neural-search-key-pair"
+            }
+        }
+    },
+    "tags": {
+        "org": "my-organization", // Update to your organization
+        "app": "aws-open-data-registry-neural-search"
+    }
+}
+```
 
 ### AWS Credentials
 Valid AWS credentials must be available to AWS CLI and SAM CLI. The easiest way to do this is running `aws configure`, or by adding them to `~/.aws/credentials` and exporting the `AWS_PROFILE` variable to the environment.
@@ -63,41 +134,53 @@ jupyter kernelspec uninstall <environment name>
 ```
 
 ### Python Development
-The Python development environment is managed by Poetry. To install Poetry, follow the instructions on the [Poetry website](https://python-poetry.org/docs/#installation).
-
-Run the command to install dependencies using Poetry.
+Create a virtual environment for Python development.
 ```bash
-poetry install
-```
+# Create a virtual environment
+python3.10 -m venv .venv
 
-To activate the virtual environment, run the command.
-```bash
-poetry shell
+# Activate the virtual environment
+source .venv/bin/activate
+
+# Upgrade pip
+pip install --upgrade pip
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
 ## Usage
 
+### Makefile Usage
+```bash
+# Deploy the application
+make deploy
+
+# Run the Batch job to load the database, make sure to copy the job ID value
+make job.run
+
+# Check the job status with the job ID
+make job.status job_id=<job_id>
+```
+
 ### Docker
 Build the application.
 ```bash
-cd tasks/load-odr
-docker build -t load-odr:latest .
+cd tasks/load_odr
+docker build -t load_odr:latest .
 ```
 Run the application.
 ```bash
-docker run -d --env-file ../.env load-odr:latest
+docker run -d --env-file ../.env load_odr:latest
 ```
-
-<!-- ### Network Configuration
-The only required variable for network configuration is the SUBNET_ID variable which must be present in `.env`. -->
 
 ### AWS Deployment
 Once an AWS profile is configured and environment variables are available, the application can be deployed using `make`.
 ```bash
-cdk deploy
+make deploy
 ```
 
-## CDK Commands
+### CDK Commands
 
 * `npm run build`   compile typescript to js
 * `npm run watch`   watch for changes and compile
@@ -105,15 +188,6 @@ cdk deploy
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
-
-<!-- ### Makefile Usage
-```bash
-# Deploy all layers
-make deploy
-
-# Delete all layers
-make delete
-``` -->
 
 ## Troubleshooting
 * Check your AWS credentials in `~/.aws/credentials`
