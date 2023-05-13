@@ -12,7 +12,6 @@ import boto3
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-AWS_REGION = os.environ["AWS_REGION"]
 REPO_URL = os.environ["REPO_URL"]
 TARGET_DATA_DIR = os.environ["TARGET_DATA_DIR"]
 WEAVIATE_ENDPOINT_SSM_PARAM = os.environ["WEAVIATE_ENDPOINT_SSM_PARAM"]
