@@ -1,8 +1,11 @@
+import * as config from '../config.json';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as batch from '@aws-cdk/aws-batch-alpha';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 
 export interface DataIngestionProps {
@@ -64,6 +67,10 @@ export class DataIngestion extends Construct {
                 },
             }
         });
+        new ssm.StringParameter(this, 'AmzOdrDataIngestionJobDefArnParam', {
+            parameterName: `/${config.tags.org}/${config.tags.app}/AmzOdrDataIngestionJobDefArn`,
+            stringValue: `arn:aws:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-definition/AmzOdrDataIngestionJobDef`,
+        });
 
         new batch.JobQueue(this, 'AmzOdrDataIngestionJobQueue', {
             jobQueueName: 'AmzOdrDataIngestionJobQueue',
@@ -74,5 +81,10 @@ export class DataIngestion extends Construct {
                 }
             ]
         });
+        new ssm.StringParameter(this, 'AmzOdrDataIngestionJobQueueArnParam', {
+            parameterName: `/${config.tags.org}/${config.tags.app}/AmzOdrDataIngestionJobQueueArn`,
+            stringValue: `arn:aws:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-queue/AmzOdrDataIngestionJobQueue`,
+        });
+
     }
 }
