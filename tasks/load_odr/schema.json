@@ -1,0 +1,275 @@
+{
+    "classes": [
+        {
+            "class": "Dataset",
+            "description": "AWS Open Registry Dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Name of the dataset",
+                    "name": "name"
+                },
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "description": "Description of the dataset",
+                    "name": "description"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Documentation of the dataset",
+                    "name": "documentation"
+                },
+                {
+                    "dataType": [
+                        "Publisher"
+                    ],
+                    "description": "Publisher of the dataset",
+                    "name": "managedBy"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "How often the dataset is updated",
+                    "name": "updateFrequency"
+                },
+                {
+                    "dataType": [
+                        "Tag"
+                    ],
+                    "description": "Descriptive tag",
+                    "name": "hasTag"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "tags",
+                    "name": "tags"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "License of the dataset",
+                    "name": "license"
+                },
+                {
+                    "dataType": [
+                        "Resource"
+                    ],
+                    "description": "Dataset resources",
+                    "name": "hasResource"
+                },
+                {
+                    "dataType": [
+                        "Tutorial"
+                    ],
+                    "description": "Dataset resources",
+                    "name": "hasTutorial"
+                },
+                {
+                    "dataType": [
+                        "Publication"
+                    ],
+                    "description": "Dataset resources",
+                    "name": "hasPublication"
+                },
+                {
+                    "dataType": [
+                        "ToolOrApplication"
+                    ],
+                    "description": "Dataset resources",
+                    "name": "hasToolOrApplication"
+                }
+            ]
+        },
+        {
+            "class": "Publisher",
+            "description": "Organization that publishes the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Name of publisher",
+                    "name": "name"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Publisher contact information",
+                    "name": "contact"
+                }
+            ]
+        },
+        {
+            "class": "Tag",
+            "description": "Related topics",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "description": "Name of tag",
+                    "name": "name"
+                }
+            ]
+        },
+        {
+            "class": "Resource",
+            "description": "Dataset resources",
+            "properties": [
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Resource description",
+                    "name": "description"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Amazon Resource Name",
+                    "name": "arn"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "AWS region",
+                    "name": "region"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Resource type",
+                    "name": "type"
+                }
+            ]
+        },
+        {
+            "class": "Tutorial",
+            "description": "Tutorials for how to analyze the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "title"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "url"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorName"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorUrl"
+                },
+                {
+                    "dataType": [
+                        "Service"
+                    ],
+                    "name": "usesService"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "services"
+                }
+            ]
+        },
+        {
+            "class": "Publication",
+            "description": "Publications that mention the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "title"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "url"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorName"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorUrl"
+                }
+            ]
+        },
+        {
+            "class": "ToolOrApplication",
+            "description": "Tools or applications that use the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "title"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "url"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorName"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorUrl"
+                }
+            ]
+        },
+        {
+            "class": "Service",
+            "description": "Services used by tutorials",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "name"
+                }
+            ]
+        }
+    ]
+}

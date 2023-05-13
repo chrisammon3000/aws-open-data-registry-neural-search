@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from functools import cached_property
 from itertools import chain
 from uuid import uuid4
-
 import jmespath
 
 logging.basicConfig(level=logging.INFO)

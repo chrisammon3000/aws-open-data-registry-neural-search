@@ -2,9 +2,10 @@ import os
 import logging
 from pathlib import Path
 import subprocess
+from multiprocessing import cpu_count
 import yaml
 import json
-from jsonviate import JsonToWeaviate
+from json2weaviate import JsonToWeaviate
 import weaviate
 import boto3
 
@@ -22,21 +23,29 @@ try:
 except:
     WEAVIATE_ENDPOINT = os.environ["WEAVIATE_ENDPOINT"]
     
-data_dir = Path(".")
+data_dir = Path(__file__).parent
 
 # fix
 logger.info(f"Environment variables:\nREPO_URL: {REPO_URL}\nTARGET_DATA_DIR: {TARGET_DATA_DIR}\nWEAVIATE_ENDPOINT: {WEAVIATE_ENDPOINT}")
 
 # configure the batch settings
-# client = weaviate.Client(WEAVIATE_ENDPOINT)
-client = weaviate.Client("http://3.211.96.210:8080")
+num_cpus = cpu_count() - 1
+client = weaviate.Client(WEAVIATE_ENDPOINT)
 client.batch.configure(
-    batch_size=100,
-    dynamic=False,
+    batch_size=10,
+    dynamic=True,
     timeout_retries=3,
+    num_workers=num_cpus,
     callback=weaviate.util.check_batch_result,
 )
 
+# create schema
+with open(data_dir / 'schema.json') as f:
+    schema = json.load(f)
+try:
+    client.schema.create(schema)
+except Exception as e:
+    client.schema.update(schema)
 
 def parse_repo_url(repo_url: str) -> str:
     """Parse the repo URL and return the owner and repository name."""
@@ -82,21 +91,23 @@ if __name__ == "__main__":
     )
 
     logger.info(f"Loading data objects and cross references...")
+    num_errors = 0
+    max_errors = 5
     with client.batch as batch:
         for idx, file in enumerate(files):
             try:
                 # while client.batch.shape
                 mapper = JsonToWeaviate.from_json(factory, file)
 
-                # # add data objects
-                # for data_object in mapper.data_objects:
-                #     batch.add_data_object(
-                #         data_object["data"],
-                #         class_name=data_object["class"],
-                #         uuid=data_object["id"],
-                #     )
+                # add data objects
+                for data_object in mapper.data_objects:
+                    batch.add_data_object(
+                        data_object["data"],
+                        class_name=data_object["class"],
+                        uuid=data_object["id"],
+                    )
 
-                # add cross references
+                # add cross references, may not work with autoschema
                 for cross_reference in mapper.cross_references:
                     batch.add_reference(
                         from_object_uuid=cross_reference['from_uuid'],
@@ -105,6 +116,14 @@ if __name__ == "__main__":
                         to_object_uuid=cross_reference['to_uuid'],
                         to_object_class_name=cross_reference['to_class_name'],
                     )
+
             except Exception as e:
-                logger.error(f"Error while processing file {file}: {e}")
+                logger.error(f"Error loading file {file}: {e}")
+                num_errors += 1
+                if num_errors >= max_errors:
+                    logger.error(f"Max errors of {max_errors} reached, aborting...")
+                    raise e
                 continue
+
+    logger.info(f"Loaded {idx + 1} files into Weaviate.")
+    exit(0)

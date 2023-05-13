@@ -1,5 +1,4 @@
-# create a python 3.11 dockerfile for AWS fargate
-FROM python:3.11.0a5-slim-buster
+FROM --platform=linux/amd64 python:3.10-slim-buster
 
 # install the requirements: pip, git
 RUN apt-get update && apt-get install -y \
@@ -18,4 +17,4 @@ COPY . .
 RUN pip3 install -r requirements.txt
 
 # run the app
-CMD [ "python3", "src/app.py" ]
+CMD [ "python3", "app.py" ]
