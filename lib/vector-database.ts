@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as config from '../config.json';
 import cdk = require('aws-cdk-lib');
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -7,9 +8,9 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 export class VectorDatabase extends Construct {
-    public readonly vpc: ec2.IVpc;
+    public readonly vpc: ec2.Vpc;
     public readonly endpointSsmParamName: string;
-    public readonly loadOdrTaskSecurityGroup: ec2.ISecurityGroup;
+    public readonly loadAmzOdrTaskSecurityGroup: ec2.ISecurityGroup;
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
@@ -25,7 +26,12 @@ export class VectorDatabase extends Construct {
             enableDnsSupport: true
         });
 
-        const vpc = this.vpc
+        // TODO use default VPC
+        // const vpc = ec2.Vpc.fromLookup(this, 'VPC', {
+        //     isDefault: true,
+        //   })
+
+        const vpc = this.vpc;
 
         // Weaviate instance security group
         const securityGroup = new ec2.SecurityGroup(this, 'VectorDatabaseSecurityGroup', {
@@ -33,12 +39,17 @@ export class VectorDatabase extends Construct {
             allowAllOutbound: true,
             description: 'Allow SSH (TCP port 22) in',
         });
-        
+
         // add the load task security group to the weaviate security group
         securityGroup.addIngressRule(
             ec2.Peer.ipv4('0.0.0.0/0'),
             ec2.Port.tcp(8080),
             'Allow Weaviate access');
+
+        securityGroup.addIngressRule(
+            ec2.Peer.ipv4(config.layers.vector_database.env.ssh_cidr),
+            ec2.Port.tcp(22),
+            'Allow SSH');
 
         const role = new iam.Role(this, 'Role', {
             assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -46,23 +57,19 @@ export class VectorDatabase extends Construct {
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'),
             ]
         });
-
-        const ami = new ec2.AmazonLinuxImage({
-            generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-            cpuType: ec2.AmazonLinuxCpuType.X86_64
-        });
-
+        
+        const ami = ec2.MachineImage.fromSsmParameter('/aws/service/canonical/ubuntu/eks/20.04/1.21/stable/current/amd64/hvm/ebs-gp2/ami-id');
         const instance = new ec2.Instance(this, 'VectorDatabase', {
             vpc,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M6I, ec2.InstanceSize.XLARGE),
             machineImage: ami,
             securityGroup,
-            keyName: 'aws-open-data-registry-neural-search-key-pair',
+            keyName: config.layers.vector_database.env.ssh_key_name,
             role,
-            instanceName: 'aws-odr-vector-database',
+            instanceName: 'amz-odr-vector-database',
             blockDevices: [{
                 deviceName: '/dev/xvda',
-                volume: ec2.BlockDeviceVolume.ebs(50)
+                volume: ec2.BlockDeviceVolume.ebs(16)
             }]
         });
 
@@ -75,6 +82,7 @@ export class VectorDatabase extends Construct {
             bucketKey: userData.s3ObjectKey
         });
 
+                // provision Ubuntu 20.04 LTS
         instance.userData.addExecuteFileCommand({
             filePath: localPath,
             arguments: '--verbose -y'
@@ -91,14 +99,13 @@ export class VectorDatabase extends Construct {
             instanceId: instance.instanceId
         });
 
-        // Create an SSM paramter with the path `/OdrNeuralSearch/${AWS_REGION}/WeaviateEndpoint
         const endpointValue = `http://${eip.attrPublicIp}:8080`
         const endpointSsmParam = new ssm.StringParameter(this, 'WeaviateEndpoint', {
-            parameterName: `/OdrNeuralSearch/${cdk.Aws.REGION}/Endpoint`,
+            parameterName: `/${config.tags.org}/${config.tags.app}/WeaviateEndpoint`,
             simpleName: false,
             stringValue: endpointValue
         });
         this.endpointSsmParamName = endpointSsmParam.parameterName
-        new cdk.CfnOutput(this, 'VectorDatabaseEndpoint', { value: endpointValue });   
+        new cdk.CfnOutput(this, 'VectorDatabaseEndpoint', { value: endpointValue });
     }
 }
