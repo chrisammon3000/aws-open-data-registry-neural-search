@@ -1,0 +1,20 @@
+{
+    "layers": {
+        "data_ingestion": {
+            "env": {
+                "repo_url": "https://github.com/awslabs/open-data-registry",
+                "target_data_dir": "datasets"
+            }
+        },
+        "vector_database": {
+            "env": {
+                "ssh_cidr": "0.0.0.0/0",
+                "ssh_key_name": "aws-open-data-registry-neural-search-key-pair"
+            }
+        }
+    },
+    "tags": {
+        "org": "my-organization",
+        "app": "aws-open-data-registry-neural-search"
+    }
+}
