@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 import streamlit as st
+import pandas as pd
+import numpy as np
 
 # configure dotenv
 load_dotenv(find_dotenv())
@@ -10,19 +12,22 @@ st.set_page_config(
     page_icon="🪐",
 )
 
-st.write("# AWS Open Data Registry")
+st.write("# Registry of Open Data on AWS")
 st.markdown(
-    """# Registry of Open Data on AWS 
+    """https://registry.opendata.aws/ 
 
 A repository of publicly available datasets that are available for access from AWS resources. Note that datasets in this registry are available via AWS resources, but they are not provided by AWS; these datasets are owned and maintained by a variety of government organizations, researchers, businesses, and individuals.
+
+## Search Datasets
+Run semantic search queries on the datasets in the registry using the Weaviate knowledge graph.
 
 ## Browse Datasets
 View specific datasets by selecting a category from the sidebar.
 
-## Explore
+## GraphQL
 Send GraphQL queries with Q&A syntax according to the [Weaviate docs](https://weaviate.io/developers/weaviate/current/graphql-references/index.html).
 
-    """
+"""
 )
 
 
@@ -97,7 +102,7 @@ Send GraphQL queries with Q&A syntax according to the [Weaviate docs](https://we
 #     bar.progress(i+1)
 #     time.sleep(0.1)
 
-@st.cache
-def my_slow_function():
-    time.sleep(5)
-    return 42
+# @st.cache
+# def my_slow_function():
+#     time.sleep(5)
+#     return 42

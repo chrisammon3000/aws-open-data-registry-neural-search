@@ -4,11 +4,12 @@ import json
 import streamlit as st
 import weaviate
 import pandas as pd
+from queries import explore_datasets_query
 
 # configure dotenv
 load_dotenv(find_dotenv())
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def get_client():
     return weaviate.Client(os.environ["WEAVIATE_ENDPOINT"])
 
@@ -49,3 +50,14 @@ def format_query_result(result):
     df = pd.DataFrame.from_dict(result['data']['Get']['Dataset'])
     df.rename(lambda col: col.capitalize(), axis=1, inplace=True)
     return df
+
+
+def run_semantic_search(concepts, limit=1000, distance=0.8, explore_datasets_query=explore_datasets_query):
+
+    explore_datasets_query = explore_datasets_query.format(
+        concepts=json.dumps(concepts.split(",")), 
+        limit=str(limit),
+        distance=str(distance)
+        )
+
+    return client.query.raw(explore_datasets_query)['data']['Get']['Dataset']

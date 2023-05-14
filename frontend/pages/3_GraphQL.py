@@ -4,8 +4,9 @@ from utils import (
     execute_query
 )
 
-st.markdown("# Query Datasets")
+st.markdown("# GraphQL")
 # st.sidebar.header("Explore Datasets")
+st.write("Enter a GraphQL query below:")
 
 query = st_ace(
     language="python",
