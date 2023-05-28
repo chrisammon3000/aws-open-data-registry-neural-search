@@ -42,9 +42,14 @@ client.batch.configure(
 with open(data_dir / 'schema.json') as f:
     schema = json.load(f)
 try:
+    # TODO check if schema exists, if not create it
     client.schema.create(schema)
+    logger.info("Schema created")
 except Exception as e:
-    client.schema.update(schema)
+    # TODO check if schema is current, if not update the respective class
+    # client.schema.update(schema)
+    logger.info(e)
+    pass
 
 def parse_repo_url(repo_url: str) -> str:
     """Parse the repo URL and return the owner and repository name."""

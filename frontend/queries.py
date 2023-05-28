@@ -24,6 +24,7 @@ explore_datasets_query = \
                     region
                     description
                     type
+                    requesterPays
                 }}
             }}
             hasTutorial {{

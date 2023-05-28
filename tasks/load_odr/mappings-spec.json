@@ -26,7 +26,8 @@
             "arn": "@.ARN",
             "region": "@.Region",
             "description": "@.Description",
-            "type": "@.Type"
+            "type": "@.Type",
+            "requesterPays": "@.RequesterPays"
         }
     },
     {
@@ -37,6 +38,7 @@
             "url": "@.URL",
             "authorName": "@.AuthorName",
             "authorUrl": "@.AuthorURL",
+            "notebookUrl": "@.NotebookURL",
             "services": "to_string(@.Services)"
         }
     },

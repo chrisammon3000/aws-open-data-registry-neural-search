@@ -31,6 +31,8 @@ def render_results(datasets, limit):
                 for resource in dataset['hasResource']:
                     st.markdown(f"**{resource['type']}**")
                     st.markdown(f"{resource['description']}")
+                    if resource['requesterPays']:
+                        st.markdown("(**requester pays**)")
                     st.code(resource['arn'], language="bash")
                     st.markdown(f"{resource['region']}")
         with st.expander("**Tutorials**"):
