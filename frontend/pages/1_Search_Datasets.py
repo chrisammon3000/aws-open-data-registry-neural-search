@@ -1,13 +1,8 @@
-import json
 import streamlit as st
-from streamlit_ace import st_ace
-from utils import (
-    execute_query,
-    execute_question_query
+from src.utils import (
+    run_semantic_search_query,
+    render_results
 )
-from queries import explore_datasets_query
-
-from render_results import render_results
 
 st.markdown("# Search Datasets")
 
@@ -17,12 +12,5 @@ limit = st.number_input(label="Limit", min_value=0, step=1, value=25)
 limit = limit if limit > 0 else 500
 
 if concepts:
-    explore_datasets_query = explore_datasets_query.format(
-        concepts=json.dumps(concepts.split(",")), 
-        limit=str(limit),
-        distance=str(distance)
-        )
-    result = execute_query(explore_datasets_query)
-    datasets = result['data']['Get']['Dataset']
-
+    datasets = run_semantic_search_query(concepts, limit=limit, distance=distance)
     render_results(datasets, limit=limit)
