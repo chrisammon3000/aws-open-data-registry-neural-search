@@ -156,6 +156,9 @@ pip install -r requirements.txt
 # Deploy the application
 make deploy
 
+# Destroy the application
+make destroy
+
 # Run the Batch job to load the database, make sure to copy the job ID value
 make job.run
 
