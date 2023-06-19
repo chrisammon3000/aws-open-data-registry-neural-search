@@ -4,12 +4,12 @@ load_dotenv(find_dotenv());
 import json
 import streamlit as st
 import weaviate
+from src.constants import WEAVIATE_ENDPOINT
 from src.queries import search_datasets_query, browse_datasets_query
-
 
 @st.cache(allow_output_mutation=True)
 def get_client():
-    return weaviate.Client(os.environ["WEAVIATE_ENDPOINT"])
+    return weaviate.Client(WEAVIATE_ENDPOINT)
 
 client = get_client()
 
