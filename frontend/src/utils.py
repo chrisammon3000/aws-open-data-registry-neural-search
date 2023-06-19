@@ -22,7 +22,7 @@ def execute_query(query):
     return json.loads(result)
 
 @st.cache(allow_output_mutation=True)
-def run_semantic_search_query(concepts, limit=1000, distance=0.8, search_datasets_query=search_datasets_query):
+def run_semantic_search_query(concepts, limit=1000, distance=0, search_datasets_query=search_datasets_query):
 
     search_datasets_query = search_datasets_query.format(
         concepts=json.dumps(concepts.split(",")), 
@@ -43,7 +43,7 @@ def render_results(datasets, limit=None, sort_by_distance=False):
     #     with st.expander("Raw JSON"):
     #         st.json(datasets[0], expanded=True)
     if sort_by_distance:
-        datasets = sorted(datasets, key=lambda k: k['_additional']['distance'], reverse=True)
+        datasets = sorted(datasets, key=lambda k: k['_additional']['distance'], reverse=False)
     for idx, dataset in enumerate(datasets):
         st.markdown("------------")
         st.markdown(f"### ({idx+1}) {dataset['name']}")
