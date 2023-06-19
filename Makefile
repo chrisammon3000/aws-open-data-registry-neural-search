@@ -25,15 +25,14 @@ app: venv
 	$(MAKE) deploy
 	@echo "Loading data into Weaviate..."
 	$(MAKE) job.run
+	$(MAKE) job.wait
 	@echo "Starting Streamlit server..."
-	# TODO poll Batch API for job status before proceeding
 	$(MAKE) streamlit.run
 
 venv:
 	@echo "Creating virtual environment..."
 	@python3.10 -m venv .venv
 	@source .venv/bin/activate && \
-	pip install -U pip && \
 	pip install -r requirements.txt
 
  # Deploy services
@@ -42,7 +41,7 @@ deploy: check-env
 	@echo "Creating EC2 key pair..."
 	$(MAKE) create-key-pair
 	@echo "Deploying CDK stack..."
-	@cdk deploy
+	@cdk deploy --require-approval never
 	$(MAKE) weaviate.wait
 	@echo "Creating Weaviate schema..."
 	$(MAKE) weaviate.schema.create
@@ -63,16 +62,18 @@ create-key-pair: ##=> Checks if the key pair already exists and creates it if it
 	aws ec2 create-key-pair --key-name $$EC2_KEY_PAIR_NAME | jq -r '.KeyMaterial' > ${ROOT_DIR}/$$EC2_KEY_PAIR_NAME.pem
 
 weaviate.wait:
-	@timeout=120 && \
+	@endpoint=$$(aws ssm get-parameters \
+		--names "/${ORGANIZATION}/${APP_NAME}/WeaviateEndpoint" | jq -r '.Parameters[0].Value') && \
+	timeout=240 && \
 	counter=0 && \
-	echo "Waiting for response from Weaviate at ${WEAVIATE_ENDPOINT}..." && \
-	until [ $$(curl -s -o /dev/null -w "%{http_code}" ${WEAVIATE_ENDPOINT}/v1) -eq 200 ] ; do \
+	echo "Waiting for response from Weaviate at $$endpoint..." && \
+	until [ $$(curl -s -o /dev/null -w "%{http_code}" $$endpoint/v1) -eq 200 ] ; do \
 		printf '.' ; \
 		sleep 1 ; \
 		counter=$$((counter + 1)) ; \
 		[ $$counter -eq $$timeout ] && break || true ; \
 	done && \
-	[ $$counter -eq $$timeout ] && echo "Operation timed out!" || echo "Ready"
+	[ $$counter -eq $$timeout ] && $$(echo "Operation timed out!" && exit 1) || echo "Ready"
 
 job.run:
 	@cmd="[\"python3\",\"app.py\"]" && \
@@ -87,11 +88,6 @@ job.run:
 	job_definition_arn=$$(aws ssm get-parameters \
 		--names "/${ORGANIZATION}/${APP_NAME}/AmzOdrDataIngestionJobDefArn" \
 	| jq -r '.Parameters[0].Value') && \
-	printf "\n***************************************************************************" && \
-	printf "\n\nPlease confirm the command for the job you are submitting:\n\n" && \
-	echo \"$$(echo $$cmd | sed 's/,/ /g' | sed 's/\"//g')\" && \
-	printf "\n***************************************************************************" && \
-	printf "\n\nDo you wish to continue? [y/N] " && read ans && [ $${ans:-N} = y ] && \
 	res=$$(aws batch submit-job \
 		--job-name=$$job_name \
 		--job-queue=$$job_queue_arn \
@@ -99,12 +95,39 @@ job.run:
 		--container-overrides command=$$cmd) && \
 	echo && \
 	echo "Job submitted:" && \
-	echo $$res | jq -r
+	echo $$res | jq -r && \
+	echo $$res > job.json
 
-job.status: #==> job.status job_id="<jobId>"
-	@[[ -z "$$job_id" ]] && echo "no job ID found" || \
+job.status:
+	@job_id=$$(jq -r '.jobId' job.json) && \
 	res=$$(aws batch describe-jobs --jobs $$job_id) && \
 	echo $$res | jq -r --arg jobId "$$job_id" '.jobs[] | select(.jobId==$$jobId) | "\(.status)"'
+
+job.wait:
+	@job_id=$$(jq -r '.jobId' job.json) && \
+	timeout=300 && \
+	counter=0 && \
+	echo "Waiting for job to complete..." && \
+	while true; do \
+		job_status=$$(res=$$(aws batch describe-jobs --jobs $$job_id) && \
+		echo $$res | jq -r --arg jobId "$$job_id" '.jobs[] | select(.jobId==$$jobId) | "\(.status)"'); \
+		if [ "$$job_status" = "SUCCEEDED" ]; then \
+			echo "Done"; \
+			rm job.json; \
+			break; \
+		elif [ "$$job_status" = "FAILED" ]; then \
+			echo "Job failed"; \
+			exit 1; \
+		else \
+			printf '.' ; \
+			sleep 1 ; \
+			counter=$$((counter + 1)) ; \
+			if [ $$counter -eq $$timeout ]; then \
+				echo "Operation timed out!" ; \
+				exit 1; \
+			fi; \
+		fi; \
+	done 
 
 weaviate.status:
 	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
