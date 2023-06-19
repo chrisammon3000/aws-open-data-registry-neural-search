@@ -13,4 +13,4 @@ limit = limit if limit > 0 else 500
 
 if concepts:
     datasets = run_semantic_search_query(concepts, limit=limit, distance=distance)
-    render_results(datasets, limit=limit)
+    render_results(datasets, limit=limit, sort_by_distance=True)

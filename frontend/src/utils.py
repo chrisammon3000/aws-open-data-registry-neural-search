@@ -37,11 +37,13 @@ def run_browse_datasets_query():
     return client.query.raw(browse_datasets_query.format())['data']['Get']['Dataset']
 
 
-def render_results(datasets, limit=None):
+def render_results(datasets, limit=None, sort_by_distance=False):
     st.text(f"{len(datasets)} results")
     # if len(datasets) > 0:
     #     with st.expander("Raw JSON"):
     #         st.json(datasets[0], expanded=True)
+    if sort_by_distance:
+        datasets = sorted(datasets, key=lambda k: k['_additional']['distance'], reverse=True)
     for idx, dataset in enumerate(datasets):
         st.markdown("------------")
         st.markdown(f"### ({idx+1}) {dataset['name']}")

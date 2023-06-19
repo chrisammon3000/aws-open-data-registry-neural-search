@@ -14,14 +14,14 @@ st.markdown(
 
 A repository of publicly available datasets that are available for access from AWS resources. Note that datasets in this registry are available via AWS resources, but they are not provided by AWS; these datasets are owned and maintained by a variety of government organizations, researchers, businesses, and individuals.
 
-## Search Datasets
-Run semantic search queries on the datasets in the registry using the Weaviate knowledge graph.
-
 ## Browse Datasets
 Browse all available datasets alphabetically.
 
+## Search Datasets
+Run semantic search queries against datasets in the registry.
+
 ## GraphQL
-Send GraphQL queries with Q&A syntax according to the [Weaviate docs](https://weaviate.io/developers/weaviate/current/graphql-references/index.html).
+Send GraphQL queries directly to Weaviate ([docs](https://weaviate.io/developers/weaviate/current/graphql-references/index.html)).
 
 """
 )
