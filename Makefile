@@ -8,9 +8,6 @@ export ORGANIZATION ?= $(shell jq -r '.tags.org' ${ROOT_DIR}/config.json)
 export APP_NAME ?= $(shell jq -r '.tags.app' ${ROOT_DIR}/config.json)
 export IAM_USER ?= $(shell aws sts get-caller-identity | jq -r '.Arn' | cut -d'/' -f 2)
 
-# # AWS resources
-# export CDK_DEFAULT_ACCOUNT ?= $(shell aws sts get-caller-identity --query Account --output text || exit 1)
-
 target:
 	$(info ${HELP_MESSAGE})
 	@exit 0
@@ -24,6 +21,21 @@ $(error CDK_DEFAULT_REGION is not set. Please select an AWS profile to use.)
 endif
 	@echo "Found environment variables"
 
+app: venv
+	$(MAKE) deploy
+	@echo "Loading data into Weaviate..."
+	$(MAKE) job.run
+	@echo "Starting Streamlit server..."
+	# TODO poll Batch API for job status before proceeding
+	$(MAKE) streamlit.run
+
+venv:
+	@echo "Creating virtual environment..."
+	@python3.10 -m venv .venv
+	@source .venv/bin/activate && \
+	pip install -U pip && \
+	pip install -r requirements.txt
+
  # Deploy services
 deploy: check-env
 	$(info [*] Deploying ${APP_NAME} to ${CDK_DEFAULT_ACCOUNT})
@@ -34,9 +46,6 @@ deploy: check-env
 	$(MAKE) weaviate.wait
 	@echo "Creating Weaviate schema..."
 	$(MAKE) weaviate.schema.create
-	@echo "Loading data into Weaviate..."
-	$(MAKE) job.run
-	# TODO run streamlit app
 
 destroy:
 	$(info [*] Destroying ${APP_NAME} in ${CDK_DEFAULT_ACCOUNT})
@@ -97,6 +106,33 @@ job.status: #==> job.status job_id="<jobId>"
 	res=$$(aws batch describe-jobs --jobs $$job_id) && \
 	echo $$res | jq -r --arg jobId "$$job_id" '.jobs[] | select(.jobId==$$jobId) | "\(.status)"'
 
+weaviate.status:
+	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
+	aws ec2 describe-instances | \
+		jq --arg iid "$$instance_id" '.Reservations[].Instances[] | select(.InstanceId == $$iid) | {InstanceId, InstanceType, "Status": .State.Name, StateTransitionReason, ImageId}'
+
+weaviate.start:
+	@echo "Starting $${APP_NAME} server..."
+	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
+	response=$$(aws ec2 start-instances --instance-ids $$instance_id) && \
+	echo $$response | jq -r
+
+weaviate.stop:
+	@echo "Stopping $${APP_NAME} server..."
+	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
+	response=$$(aws ec2 stop-instances --instance-ids $$instance_id) && \
+	echo $$response | jq -r
+
+weaviate.reboot:
+	@echo "Rebooting $${APP_NAME} server..."
+	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
+	response=$$(aws ec2 reboot-instances --instance-ids $$instance_id) && echo "$$response"
+	$(MAKE) database.status
+
+weaviate.get.endpoint:
+	@endpoint=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/WeaviateEndpoint" | jq -r '.Parameters[0].Value') && \
+	echo "$$endpoint"
+
 weaviate.schema.create:
 	@bash scripts/create_schema.sh
 
@@ -105,6 +141,12 @@ weaviate.schema.delete:
 	read ans && [ $${ans:-N} = y ] && \
 	bash scripts/delete_schema.sh
 
+streamlit.run:
+	@echo "Starting Streamlit server..."
+	@source .venv/bin/activate && \
+	streamlit run frontend/Open_Data_Registry.py
+
+# TODO complete
 define HELP_MESSAGE
 
 	Environment variables:

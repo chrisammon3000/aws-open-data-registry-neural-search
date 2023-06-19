@@ -99,6 +99,13 @@ export class VectorDatabase extends Construct {
             instanceId: instance.instanceId
         });
 
+        // instance ID ssm parameter
+        const instanceIdSsmParam = new ssm.StringParameter(this, 'InstanceId', {
+            parameterName: `/${config.tags.org}/${config.tags.app}/InstanceId`,
+            simpleName: false,
+            stringValue: instance.instanceId
+        });
+
         const endpointValue = `http://${eip.attrPublicIp}:8080`
         const endpointSsmParam = new ssm.StringParameter(this, 'WeaviateEndpoint', {
             parameterName: `/${config.tags.org}/${config.tags.app}/WeaviateEndpoint`,
