@@ -1,7 +1,3 @@
-##########################
-# Bootstrapping variables
-##########################
-
 # Adds .env variables to the environment, used for secrets
 include .env
 export
@@ -12,8 +8,8 @@ export ORGANIZATION ?= $(shell jq -r '.tags.org' ${ROOT_DIR}/config.json)
 export APP_NAME ?= $(shell jq -r '.tags.app' ${ROOT_DIR}/config.json)
 export IAM_USER ?= $(shell aws sts get-caller-identity | jq -r '.Arn' | cut -d'/' -f 2)
 
-# AWS resources
-export CDK_DEFAULT_ACCOUNT ?= $(shell aws sts get-caller-identity --query Account --output text || exit 1)
+# # AWS resources
+# export CDK_DEFAULT_ACCOUNT ?= $(shell aws sts get-caller-identity --query Account --output text || exit 1)
 
 target:
 	$(info ${HELP_MESSAGE})
@@ -31,8 +27,16 @@ endif
  # Deploy services
 deploy: check-env
 	$(info [*] Deploying ${APP_NAME} to ${CDK_DEFAULT_ACCOUNT})
+	@echo "Creating EC2 key pair..."
 	$(MAKE) create-key-pair
+	@echo "Deploying CDK stack..."
 	@cdk deploy
+	$(MAKE) weaviate.wait
+	@echo "Creating Weaviate schema..."
+	$(MAKE) weaviate.schema.create
+	@echo "Loading data into Weaviate..."
+	$(MAKE) job.run
+	# TODO run streamlit app
 
 destroy:
 	$(info [*] Destroying ${APP_NAME} in ${CDK_DEFAULT_ACCOUNT})
@@ -48,6 +52,18 @@ create-key-pair: ##=> Checks if the key pair already exists and creates it if it
 	[ "$$key_pair" ] && echo "Key pair found: $$key_pair" && exit 0 || echo "No key pair found..." && \
 	echo "Creating EC2 key pair \"$$EC2_KEY_PAIR_NAME\"" && \
 	aws ec2 create-key-pair --key-name $$EC2_KEY_PAIR_NAME | jq -r '.KeyMaterial' > ${ROOT_DIR}/$$EC2_KEY_PAIR_NAME.pem
+
+weaviate.wait:
+	@timeout=120 && \
+	counter=0 && \
+	echo "Waiting for response from Weaviate at ${WEAVIATE_ENDPOINT}..." && \
+	until [ $$(curl -s -o /dev/null -w "%{http_code}" ${WEAVIATE_ENDPOINT}/v1) -eq 200 ] ; do \
+		printf '.' ; \
+		sleep 1 ; \
+		counter=$$((counter + 1)) ; \
+		[ $$counter -eq $$timeout ] && break || true ; \
+	done && \
+	[ $$counter -eq $$timeout ] && echo "Operation timed out!" || echo "Ready"
 
 job.run:
 	@cmd="[\"python3\",\"app.py\"]" && \
@@ -80,6 +96,14 @@ job.status: #==> job.status job_id="<jobId>"
 	@[[ -z "$$job_id" ]] && echo "no job ID found" || \
 	res=$$(aws batch describe-jobs --jobs $$job_id) && \
 	echo $$res | jq -r --arg jobId "$$job_id" '.jobs[] | select(.jobId==$$jobId) | "\(.status)"'
+
+weaviate.schema.create:
+	@bash scripts/create_schema.sh
+
+weaviate.schema.delete:
+	@printf "Deleting the schema will remove all data. Do you wish to continue? [y/N] " && \
+	read ans && [ $${ans:-N} = y ] && \
+	bash scripts/delete_schema.sh
 
 define HELP_MESSAGE
 

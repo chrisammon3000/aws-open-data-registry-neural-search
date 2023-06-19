@@ -1,6 +1,200 @@
 {
     "classes": [
         {
+            "class": "Publisher",
+            "description": "Organization that publishes the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Name of publisher",
+                    "name": "name"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Publisher contact information",
+                    "name": "contact"
+                }
+            ]
+        },
+        {
+            "class": "Tag",
+            "description": "Related topics",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "description": "Name of tag",
+                    "name": "name"
+                }
+            ]
+        },
+        {
+            "class": "Resource",
+            "description": "Dataset resources",
+            "properties": [
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Resource description",
+                    "name": "description"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Amazon Resource Name",
+                    "name": "arn"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "AWS region",
+                    "name": "region"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "description": "Resource type",
+                    "name": "type"
+                },
+                {
+                    "dataType": [
+                        "boolean"
+                    ],
+                    "description": "Whether or not the bucket has RequesterPays set up",
+                    "name": "requesterPays"
+                }
+            ]
+        },
+        {
+            "class": "Service",
+            "description": "Services used by tutorials",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "name"
+                }
+            ]
+        },
+        {
+            "class": "Tutorial",
+            "description": "Tutorials for how to analyze the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "title"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "url"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorName"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorUrl"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "notebookUrl"
+                },
+                {
+                    "dataType": [
+                        "Service"
+                    ],
+                    "name": "usesService"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "services"
+                }
+            ]
+        },
+        {
+            "class": "ToolOrApplication",
+            "description": "Tools or applications that use the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "title"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "url"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorName"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorUrl"
+                }
+            ]
+        },
+        {
+            "class": "Publication",
+            "description": "Publications that mention the dataset",
+            "properties": [
+                {
+                    "dataType": [
+                        "text"
+                    ],
+                    "name": "title"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "url"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorName"
+                },
+                {
+                    "dataType": [
+                        "string"
+                    ],
+                    "name": "authorUrl"
+                }
+            ]
+        },
+        {
             "class": "Dataset",
             "description": "AWS Open Registry Dataset",
             "properties": [
@@ -87,200 +281,6 @@
                     ],
                     "description": "Dataset resources",
                     "name": "hasToolOrApplication"
-                }
-            ]
-        },
-        {
-            "class": "Publisher",
-            "description": "Organization that publishes the dataset",
-            "properties": [
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "description": "Name of publisher",
-                    "name": "name"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "description": "Publisher contact information",
-                    "name": "contact"
-                }
-            ]
-        },
-        {
-            "class": "Tag",
-            "description": "Related topics",
-            "properties": [
-                {
-                    "dataType": [
-                        "text"
-                    ],
-                    "description": "Name of tag",
-                    "name": "name"
-                }
-            ]
-        },
-        {
-            "class": "Resource",
-            "description": "Dataset resources",
-            "properties": [
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "description": "Resource description",
-                    "name": "description"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "description": "Amazon Resource Name",
-                    "name": "arn"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "description": "AWS region",
-                    "name": "region"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "description": "Resource type",
-                    "name": "type"
-                },
-                {
-                    "dataType": [
-                        "boolean"
-                    ],
-                    "description": "Whether or not the bucket has RequesterPays set up",
-                    "name": "requesterPays"
-                }
-            ]
-        },
-        {
-            "class": "Tutorial",
-            "description": "Tutorials for how to analyze the dataset",
-            "properties": [
-                {
-                    "dataType": [
-                        "text"
-                    ],
-                    "name": "title"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "url"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "authorName"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "authorUrl"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "notebookUrl"
-                },
-                {
-                    "dataType": [
-                        "Service"
-                    ],
-                    "name": "usesService"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "services"
-                }
-            ]
-        },
-        {
-            "class": "Publication",
-            "description": "Publications that mention the dataset",
-            "properties": [
-                {
-                    "dataType": [
-                        "text"
-                    ],
-                    "name": "title"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "url"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "authorName"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "authorUrl"
-                }
-            ]
-        },
-        {
-            "class": "ToolOrApplication",
-            "description": "Tools or applications that use the dataset",
-            "properties": [
-                {
-                    "dataType": [
-                        "text"
-                    ],
-                    "name": "title"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "url"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "authorName"
-                },
-                {
-                    "dataType": [
-                        "string"
-                    ],
-                    "name": "authorUrl"
-                }
-            ]
-        },
-        {
-            "class": "Service",
-            "description": "Services used by tutorials",
-            "properties": [
-                {
-                    "dataType": [
-                        "text"
-                    ],
-                    "name": "name"
                 }
             ]
         }

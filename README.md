@@ -149,12 +149,19 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### Weaviate
+### Weaviate Configuration
+Configuring Weaviate requires 3 steps:
+1. Download the Docker Compose file.
+2. Update the Docker Compose file to configure Weaviate to persist data and automatically restart on reboot.
+3. Run the Docker Compose file.
+
+#### Download the Docker Compose File
 Run the command to download a Docker Compose file for Weaviate ([source](https://weaviate.io/developers/weaviate/installation/docker-compose)).
 ```bash
 curl -o docker-compose.yaml "https://configuration.weaviate.io/v2/docker-compose/docker-compose.yml?generative_cohere=false&generative_openai=false&generative_palm=false&gpu_support=false&media_type=text&modules=modules&ner_module=false&qna_module=false&ref2vec_centroid=false&runtime=docker-compose&spellcheck_module=false&sum_module=false&text_module=text2vec-transformers&transformers_model=sentence-transformers-multi-qa-MiniLM-L6-cos-v1&weaviate_version=v1.19.8"
 ```
 
+#### Update the Docker Compose File
 Next, run the command to configure Weaviate to persist data and automatically restart on reboot.
 ```bash
 awk '
@@ -189,6 +196,7 @@ awk '
   1' docker-compose.yaml > docker-compose-temp.yaml && mv docker-compose-temp.yaml docker-compose.yaml
 ```
 
+#### Run the Docker Compose File
 Finally, run the command to start Weaviate.
 ```bash
 docker-compose up -d
@@ -227,6 +235,10 @@ Once an AWS profile is configured and environment variables are available, the a
 ```bash
 make deploy
 ```
+
+### Weaviate
+
+#### Create the Schema
 
 ### CDK Commands
 
