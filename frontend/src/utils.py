@@ -54,6 +54,9 @@ def render_results(datasets, limit=None, sort_by_distance=False):
             )
         st.markdown(f"**Managed by:**")
         st.markdown('- '.join([ item['name']+'\n' for item in dataset['managedBy'] ]))
+        if 'license' in dataset:
+            st.markdown(f"**License:**")
+            st.markdown(f"{dataset['license']}")
         st.markdown(f"**Tags:**")
         tags = ", ".join([tag for tag in dataset['tags'].split(',') if tag != 'aws-pds'])
         st.markdown(f"{tags}")
@@ -65,6 +68,7 @@ def render_results(datasets, limit=None, sort_by_distance=False):
                     st.markdown(f"**{publication['title']}**")
                     st.markdown(f"{publication['url']}")
                     st.markdown(f"{publication['authorName']}")
+                    st.markdown("------------")
         with st.expander("**Resources**"):
             if dataset['hasResource'] is not None:
                 for resource in dataset['hasResource']:
@@ -74,15 +78,18 @@ def render_results(datasets, limit=None, sort_by_distance=False):
                         st.markdown("**requester pays**")
                     st.code(resource['arn'], language="bash")
                     st.markdown(f"{resource['region']}")
+                    st.markdown("------------")
         with st.expander("**Tutorials**"):
             if dataset['hasTutorial'] is not None:
                 for tutorial in dataset['hasTutorial']:
                     st.markdown(f"**{tutorial['title']}**")
                     st.markdown(f"{tutorial['url']}")
                     if tutorial['services'] != "null":
-                        st.markdown(f"{tutorial['services']}")
+                        st.markdown(f"AWS Services: {', '.join(tutorial['services'])}")
+                    st.markdown("------------")
         with st.expander("**Tools and Applications**"):
             if dataset['hasToolOrApplication'] is not None:
                 for tool in dataset['hasToolOrApplication']:
                     st.markdown(f"**{tool['title']}** ({tool['authorName']})")
                     st.markdown(f"{tool['url']}")
+                    st.markdown("------------")
