@@ -1,13 +1,7 @@
-<!-- vscode-markdown-toc-config
-	numbering=false
-	autoSave=true
-	/vscode-markdown-toc-config -->
-<!-- /vscode-markdown-toc --># aws-open-data-registry-neural-search
+# aws-open-data-registry-neural-search
 Semantic search of [AWS Open Data Registry](https://registry.opendata.aws/) datasets using Weaviate.
 
 ## <a name='TableofContents'></a>Table of Contents
-
-<!-- vscode-markdown-toc -->
 * [Table of Contents](#TableofContents)
 * [Project Structure](#ProjectStructure)
 * [Description](#Description)
