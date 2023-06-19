@@ -149,6 +149,51 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+### Weaviate
+Run the command to download a Docker Compose file for Weaviate ([source](https://weaviate.io/developers/weaviate/installation/docker-compose)).
+```bash
+curl -o docker-compose.yaml "https://configuration.weaviate.io/v2/docker-compose/docker-compose.yml?generative_cohere=false&generative_openai=false&generative_palm=false&gpu_support=false&media_type=text&modules=modules&ner_module=false&qna_module=false&ref2vec_centroid=false&runtime=docker-compose&spellcheck_module=false&sum_module=false&text_module=text2vec-transformers&transformers_model=sentence-transformers-multi-qa-MiniLM-L6-cos-v1&weaviate_version=v1.19.8"
+```
+
+Next, run the command to configure Weaviate to persist data and automatically restart on reboot.
+```bash
+awk '
+  /^  weaviate:$/ {
+    print
+    print "    restart: always"
+    print "    volumes:"
+    print "      - /data/weaviate:/var/lib/weaviate"
+    while(getline && $0 !~ /^  /);
+    if ($0 ~ /^  /) {
+      print
+    }
+    next
+  }
+  /^  t2v-transformers:$/ {
+    print
+    print "    restart: always"
+    while(getline && $0 !~ /^  /);
+    if ($0 ~ /^  /) {
+      print
+    }
+    next
+  }
+  /CLUSTER_HOSTNAME: '\''node1'\''/ {
+    print
+    print "      AUTOSCHEMA_ENABLED: '\''false'\''"
+    next
+  }
+  /restart: on-failure:0/ {
+    next
+  }
+  1' docker-compose.yaml > docker-compose-temp.yaml && mv docker-compose-temp.yaml docker-compose.yaml
+```
+
+Finally, run the command to start Weaviate.
+```bash
+docker-compose up -d
+```
+
 ## Usage
 
 ### Makefile Usage
@@ -201,6 +246,7 @@ make deploy
 - [AWS Open Data Registry](https://registry.opendata.aws/)
 - [Weaviate Docuentation](https://www.semi.technology/developers/weaviate/current/index.html)
 - [Weaviate GraphQL API](https://weaviate.io/developers/weaviate/current/graphql-references/index.html)
+- [Weaviate Docker Compose](https://weaviate.io/developers/weaviate/installation/docker-compose)
 
 ## Authors
 **Primary Contact:** Gregory Lindsey ([@abk7777](https://github.com/abk7777))
