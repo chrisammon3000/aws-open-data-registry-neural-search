@@ -169,7 +169,6 @@ streamlit.run:
 	@source .venv/bin/activate && \
 	streamlit run frontend/Open_Data_Registry.py
 
-# TODO complete
 define HELP_MESSAGE
 
 	Environment variables:
@@ -182,6 +181,15 @@ define HELP_MESSAGE
 
 	ROOT_DIR: "${ROOT_DIR}":
 		Description: Project directory containing the full source code
+
+	ORGANIZATION: "${ORGANIZATION}":
+		Description: Organization name, declared in `config.json`
+
+	APP_NAME: "${APP_NAME}":
+		Description: Application name, declared in `config.json`
+
+	IAM_USER: "${IAM_USER}":
+		Description: IAM user name for job name
 		
 	Common usage:
 
