@@ -1,0 +1,10 @@
+weaviate-client==3.9.0
+pyyaml==6.0
+boto3==1.26.21
+pandas==1.5.2
+jmespath==1.0.1
+streamlit==1.16.0
+python-dotenv==0.21.0
+streamlit-ace==0.1.1
+altair<5
+streamlit-aggrid

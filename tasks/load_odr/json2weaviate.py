@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from functools import cached_property
 from itertools import chain
 from uuid import uuid4
-
 import jmespath
 
 logging.basicConfig(level=logging.INFO)
@@ -92,7 +91,6 @@ class JsonToWeaviate:
         align_map = [child_key in item for item in jmespath.search(par_path, self.input)]
         return [idx for idx, i in enumerate(align_map) if i]
 
-    # TODO need a way of handling arrays inside arrays: Services class is an example
     @staticmethod
     def build_weaviate_object(class_name, expr, data):
         return [{"id": str(uuid4()), "class": class_name, "data": item} for item in jmespath.search(expr, data)]
@@ -128,8 +126,6 @@ class JsonToWeaviate:
                     for from_uuid, to_uuid in from_to_align_map.items()
                 ]
             else:
-                # TODO nested list comprehension results in a cartesion product, but so far it's
-                # TODO only been tested with len(from_uuids) == 1. May want to test n:n relationships and possibly optimized this for specific conditions: 1:1, 1:n, n:1, n:n
                 if len(from_uuids) > 1:
                     logger.warning(f"Multiple UUIDs in source class while setting references: {ref_spec['fromClass']}.")
                 ref = [
@@ -177,152 +173,3 @@ class JsonToWeaviate:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
-
-    # TODO Test with different types of JSON
-    # TODO Documentation of class & ref mappings
-    # TODO skip renaming and use default field names in class mapping
-    # TODO validate the ids set correctly for references
-
-
-if __name__ == "__main__":
-    # from pathlib import Path
-
-    # # open a json file
-    # path = Path(__file__).parent / "event.json"
-    # with open(path) as file:
-    #     event = json.load(file)
-    # data = json.loads(event["Records"][0]["body"])["data"]
-
-    with open("___data/awslabs/output/aws-odr.json") as f:
-        data_objs = json.load(f)
-    data = data_objs[2]
-
-    # # write to file
-    # with open("tests/data/raw/aws-odr.json", "w") as f:
-    #     json.dump(data_objs[:20], f, indent=4)
-
-    mappings = [
-        {
-            "class": "Dataset",
-            "path": None,
-            "substitutions": {
-                "name": "Name",
-                "description": "Description",
-                "documentation": "Documentation",
-                "updateFrequency": "UpdateFrequency",
-                "license": "License",
-            },
-        },
-        {
-            "class": "Publisher",
-            "path": None,
-            "substitutions": {"name": "ManagedBy", "contact": "Contact"},
-        },
-        {
-            "class": "Tag",
-            "path": "Tags",
-            "substitutions": {
-                "name": "@",
-            },
-        },
-        {
-            "class": "Resource",
-            "path": "Resources",
-            "substitutions": {
-                "arn": "@.ARN",
-                "region": "@.Region",
-                "description": "@.Description",
-                "type": "@.Type",
-            },
-        },
-        {
-            "class": "Tutorial",
-            "path": "DataAtWork.Tutorials",
-            "substitutions": {
-                "title": "@.Title",
-                "url": "@.URL",
-                "authorName": "@.AuthorName",
-                "authorUrl": "@.AuthorURL",
-            },
-        },
-        {
-            "class": "Publication",
-            "path": "DataAtWork.Publications",
-            "substitutions": {
-                "title": "@.Title",
-                "url": "@.URL",
-                "authorName": "@.AuthorName",
-                "authorUrl": "@.AuthorURL",
-            },
-        },
-        {
-            "class": "ToolOrApplication",
-            "path": 'DataAtWork."Tools & Applications"',
-            "substitutions": {
-                "title": "@.Title",
-                "url": "@.URL",
-                "authorName": "@.AuthorName",
-                "authorUrl": "@.AuthorURL",
-            },
-        },
-        {
-            "class": "Service",
-            "path": "DataAtWork.Tutorials[].Services[]",
-            "substitutions": {"name": "@"},
-        },
-    ]
-
-    references = [
-        {
-            "fromClass": "Dataset",
-            "toClass": "Publisher",
-            "property": "managedBy",
-        },
-        {
-            "fromClass": "Dataset",
-            "toClass": "Tag",
-            "property": "hasTag",
-        },
-        {
-            "fromClass": "Dataset",
-            "toClass": "Resource",
-            "property": "hasResource",
-        },
-        {
-            "fromClass": "Dataset",
-            "toClass": "Tutorial",
-            "property": "hasTutorial",
-        },
-        {
-            "fromClass": "Tutorial",
-            "toClass": "Service",
-            "property": "usesService",
-        },
-    ]
-
-    # write out json files for mapping
-    path = "./tests/data"
-    with open(f"{path}/mappings.json", "w") as f:
-        json.dump(mappings, f, indent=4)
-    with open(f"{path}/references.json", "w") as f:
-        json.dump(references, f, indent=4)
-
-    builders = []
-    data_objects = []
-    cross_references = []
-    factory = JsonToWeaviate(mappings, references)
-    for idx, data in enumerate(data_objs):
-        builder = JsonToWeaviate.from_json(factory, data)
-        builders.append(builder)
-        data_objects.append(builder.data_objects)
-        cross_references.append(builder.cross_references)
-        print(builder)
-        if idx == 20:
-            break
-
-    # with open(f"___data/output/all_data/data-objects.json", "w") as f:
-    #     json.dump(data_objects, f, indent=4)
-    # with open(f"___data/output/all_data/cross-references.json", "w") as f:
-    #     json.dump(cross_references, f, indent=4)
-
-    print("")

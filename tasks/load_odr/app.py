@@ -2,35 +2,39 @@ import os
 import logging
 from pathlib import Path
 import subprocess
+from multiprocessing import cpu_count
 import yaml
 import json
-from jsonviate import JsonToWeaviate
+from json2weaviate import JsonToWeaviate
 import weaviate
 import boto3
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-AWS_REGION = os.environ["AWS_REGION"]
 REPO_URL = os.environ["REPO_URL"]
 TARGET_DATA_DIR = os.environ["TARGET_DATA_DIR"]
 WEAVIATE_ENDPOINT_SSM_PARAM = os.environ["WEAVIATE_ENDPOINT_SSM_PARAM"]
 
-ssm = boto3.client('ssm')
-WEAVIATE_ENDPOINT = ssm.get_parameter(Name=WEAVIATE_ENDPOINT_SSM_PARAM, WithDecryption=False)['Parameter']['Value']
-
-data_dir = Path(".")
+try:
+    ssm = boto3.client('ssm')
+    WEAVIATE_ENDPOINT = ssm.get_parameter(Name=WEAVIATE_ENDPOINT_SSM_PARAM, WithDecryption=False)['Parameter']['Value']
+except:
+    WEAVIATE_ENDPOINT = os.environ["WEAVIATE_ENDPOINT"]
+    
+data_dir = Path(__file__).parent
 
 # fix
 logger.info(f"Environment variables:\nREPO_URL: {REPO_URL}\nTARGET_DATA_DIR: {TARGET_DATA_DIR}\nWEAVIATE_ENDPOINT: {WEAVIATE_ENDPOINT}")
 
 # configure the batch settings
-# client = weaviate.Client(WEAVIATE_ENDPOINT)
-client = weaviate.Client("http://3.211.96.210:8080")
+num_cpus = cpu_count() - 1
+client = weaviate.Client(WEAVIATE_ENDPOINT)
 client.batch.configure(
-    batch_size=100,
-    dynamic=False,
+    batch_size=10,
+    dynamic=True,
     timeout_retries=3,
+    num_workers=num_cpus,
     callback=weaviate.util.check_batch_result,
 )
 
@@ -79,6 +83,8 @@ if __name__ == "__main__":
     )
 
     logger.info(f"Loading data objects and cross references...")
+    num_errors = 0
+    max_errors = 5
     with client.batch as batch:
         for idx, file in enumerate(files):
             try:
@@ -93,7 +99,7 @@ if __name__ == "__main__":
                         uuid=data_object["id"],
                     )
 
-                # add cross references
+                # add cross references, may not work with autoschema
                 for cross_reference in mapper.cross_references:
                     batch.add_reference(
                         from_object_uuid=cross_reference['from_uuid'],
@@ -102,6 +108,14 @@ if __name__ == "__main__":
                         to_object_uuid=cross_reference['to_uuid'],
                         to_object_class_name=cross_reference['to_class_name'],
                     )
+
             except Exception as e:
-                logger.error(f"Error while processing file {file}: {e}")
+                logger.error(f"Error loading file {file}: {e}")
+                num_errors += 1
+                if num_errors >= max_errors:
+                    logger.error(f"Max errors of {max_errors} reached, aborting...")
+                    raise e
                 continue
+
+    logger.info(f"Loaded {idx + 1} files into Weaviate.")
+    exit(0)

@@ -6,11 +6,6 @@
     },
     {
         "fromClass": "Dataset",
-        "toClass": "Tag",
-        "property": "hasTag"
-    },
-    {
-        "fromClass": "Dataset",
         "toClass": "Resource",
         "property": "hasResource"
     },
@@ -20,8 +15,13 @@
         "property": "hasTutorial"
     },
     {
-        "fromClass": "Tutorial",
-        "toClass": "Service",
-        "property": "usesService"
+        "fromClass": "Dataset",
+        "toClass": "ToolOrApplication",
+        "property": "hasToolOrApplication"
+    },
+    {
+        "fromClass": "Dataset",
+        "toClass": "Publication",
+        "property": "hasPublication"
     }
 ]

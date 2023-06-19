@@ -1,8 +1,11 @@
+import * as config from '../config.json';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as batch from '@aws-cdk/aws-batch-alpha';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 
 export interface DataIngestionProps {
@@ -16,16 +19,14 @@ export class DataIngestion extends Construct {
     constructor(scope: Construct, id: string, props: DataIngestionProps) {
         super(scope, id);
 
-        // create a service role for the Batch compute environment
-        const serviceRole = new iam.Role(this, 'OdrDataIngestionServiceRole', {
+        const serviceRole = new iam.Role(this, 'AmzOdrDataIngestionServiceRole', {
             assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole')
             ]
         });
 
-        // Create the same compute environment using cfnBatch, assign the workerInstanceRole
-        const computeEnvironment = new batch.ComputeEnvironment(this, 'OdrDataComputeEnv', {
+        const computeEnvironment = new batch.ComputeEnvironment(this, 'AmzOdrDataComputeEnv', {
             serviceRole,
             computeResources: {
                 type: batch.ComputeResourceType.FARGATE_SPOT,
@@ -34,29 +35,27 @@ export class DataIngestion extends Construct {
             },
         });
 
-        // Create a Fargate task execution role that aattaches AmazonSSMFullAccess policy
-        const executionRole = new iam.Role(this, 'OdrDataIngestionTaskExecutionRole', {
+        const executionRole = new iam.Role(this, 'AmzOdrDataIngestionTaskExecutionRole', {
             assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy')
             ]
         });
 
-        const jobRole = new iam.Role(this, 'OdrDataIngestionJobRole', {
+        const jobRole = new iam.Role(this, 'AmzOdrDataIngestionJobRole', {
             assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMFullAccess')
             ]
         });
 
-        // create a Batch job definition
-        new batch.JobDefinition(this, 'OdrDataIngestionJobDef', {
-            jobDefinitionName: 'OdrDataIngestionJobDef',
+        new batch.JobDefinition(this, 'AmzOdrDataIngestionJobDef', {
+            jobDefinitionName: 'AmzOdrDataIngestionJobDef',
             platformCapabilities: [batch.PlatformCapabilities.FARGATE],
             container: {
                 executionRole: executionRole,
                 jobRole: jobRole,
-                image: ecs.ContainerImage.fromAsset('./tasks/load-odr'),
+                image: ecs.ContainerImage.fromAsset('./tasks/load_odr'),
                 environment: {
                     REPO_URL: props.repoUrl,
                     TARGET_DATA_DIR: props.targetDataDirectory,
@@ -68,10 +67,13 @@ export class DataIngestion extends Construct {
                 },
             }
         });
+        new ssm.StringParameter(this, 'AmzOdrDataIngestionJobDefArnParam', {
+            parameterName: `/${config.tags.org}/${config.tags.app}/AmzOdrDataIngestionJobDefArn`,
+            stringValue: `arn:aws:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-definition/AmzOdrDataIngestionJobDef`,
+        });
 
-        // create a Batch job queue
-        new batch.JobQueue(this, 'OdrDataIngestionJobQueue', {
-            jobQueueName: 'OdrDataIngestionJobQueue',
+        new batch.JobQueue(this, 'AmzOdrDataIngestionJobQueue', {
+            jobQueueName: 'AmzOdrDataIngestionJobQueue',
             computeEnvironments: [
                 {
                     computeEnvironment,
@@ -79,5 +81,10 @@ export class DataIngestion extends Construct {
                 }
             ]
         });
+        new ssm.StringParameter(this, 'AmzOdrDataIngestionJobQueueArnParam', {
+            parameterName: `/${config.tags.org}/${config.tags.app}/AmzOdrDataIngestionJobQueueArn`,
+            stringValue: `arn:aws:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-queue/AmzOdrDataIngestionJobQueue`,
+        });
+
     }
 }
