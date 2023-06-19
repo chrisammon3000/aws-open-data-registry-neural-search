@@ -8,34 +8,31 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 export class VectorDatabase extends Construct {
-    public readonly vpc: ec2.Vpc;
+    public readonly vpc: ec2.IVpc;
     public readonly endpointSsmParamName: string;
     public readonly loadAmzOdrTaskSecurityGroup: ec2.ISecurityGroup;
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        // can move networking resources to a separate construct later; allow DNS resolution
-        this.vpc = new ec2.Vpc(this, 'VPC', {
-            natGateways: 0,
-            subnetConfiguration: [{
-                name: 'Vpc',
-                subnetType: ec2.SubnetType.PUBLIC,
-                cidrMask: 24
-            }],
-            enableDnsHostnames: true,
-            enableDnsSupport: true
-        });
+        // // can move networking resources to a separate construct later; allow DNS resolution
+        // this.vpc = new ec2.Vpc(this, 'VPC', {
+        //     natGateways: 0,
+        //     subnetConfiguration: [{
+        //         name: 'Vpc',
+        //         subnetType: ec2.SubnetType.PUBLIC,
+        //         cidrMask: 24
+        //     }],
+        //     enableDnsHostnames: true,
+        //     enableDnsSupport: true
+        // });
 
-        // TODO use default VPC
-        // const vpc = ec2.Vpc.fromLookup(this, 'VPC', {
-        //     isDefault: true,
-        //   })
-
-        const vpc = this.vpc;
+        this.vpc = ec2.Vpc.fromLookup(this, 'VPC', {
+            isDefault: true,
+          });
 
         // Weaviate instance security group
         const securityGroup = new ec2.SecurityGroup(this, 'VectorDatabaseSecurityGroup', {
-            vpc,
+            vpc: this.vpc,
             allowAllOutbound: true,
             description: 'Allow SSH (TCP port 22) in',
         });
@@ -60,7 +57,7 @@ export class VectorDatabase extends Construct {
         
         const ami = ec2.MachineImage.fromSsmParameter('/aws/service/canonical/ubuntu/eks/20.04/1.21/stable/current/amd64/hvm/ebs-gp2/ami-id');
         const instance = new ec2.Instance(this, 'VectorDatabase', {
-            vpc,
+            vpc: this.vpc,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.M6I, ec2.InstanceSize.XLARGE),
             machineImage: ami,
             securityGroup,

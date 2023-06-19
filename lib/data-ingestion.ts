@@ -11,7 +11,7 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 export interface DataIngestionProps {
     repoUrl: string;
     targetDataDirectory: string;
-    vpc: ec2.Vpc;
+    vpc: ec2.IVpc;
     endpointSsmParamName: string;
 }
 
