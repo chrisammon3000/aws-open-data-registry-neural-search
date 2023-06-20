@@ -61,20 +61,6 @@ create-key-pair: ##=> Checks if the key pair already exists and creates it if it
 	echo "Creating EC2 key pair \"$$EC2_KEY_PAIR_NAME\"" && \
 	aws ec2 create-key-pair --key-name $$EC2_KEY_PAIR_NAME | jq -r '.KeyMaterial' > ${ROOT_DIR}/$$EC2_KEY_PAIR_NAME.pem
 
-weaviate.wait:
-	@endpoint=$$(aws ssm get-parameters \
-		--names "/${ORGANIZATION}/${APP_NAME}/WeaviateEndpoint" | jq -r '.Parameters[0].Value') && \
-	timeout=240 && \
-	counter=0 && \
-	echo "Waiting for response from Weaviate at $$endpoint..." && \
-	until [ $$(curl -s -o /dev/null -w "%{http_code}" $$endpoint/v1) -eq 200 ] ; do \
-		printf '.' ; \
-		sleep 1 ; \
-		counter=$$((counter + 1)) ; \
-		[ $$counter -eq $$timeout ] && break || true ; \
-	done && \
-	[ $$counter -eq $$timeout ] && $$(echo "Operation timed out!" && exit 1) || echo "Ready"
-
 job.run:
 	@cmd="[\"python3\",\"app.py\"]" && \
 	for param in $$params ; do \
@@ -139,6 +125,7 @@ weaviate.start:
 	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
 	response=$$(aws ec2 start-instances --instance-ids $$instance_id) && \
 	echo $$response | jq -r
+	$(MAKE) weaviate.wait
 
 weaviate.stop:
 	@echo "Stopping $${APP_NAME} server..."
@@ -150,7 +137,21 @@ weaviate.reboot:
 	@echo "Rebooting $${APP_NAME} server..."
 	@instance_id=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/InstanceId" | jq -r '.Parameters[0].Value') && \
 	response=$$(aws ec2 reboot-instances --instance-ids $$instance_id) && echo "$$response"
-	$(MAKE) database.status
+	$(MAKE) weaviate.wait
+
+weaviate.wait:
+	@endpoint=$$(aws ssm get-parameters \
+		--names "/${ORGANIZATION}/${APP_NAME}/WeaviateEndpoint" | jq -r '.Parameters[0].Value') && \
+	timeout=240 && \
+	counter=0 && \
+	echo "Waiting for response from Weaviate at $$endpoint..." && \
+	until [ $$(curl -s -o /dev/null -w "%{http_code}" $$endpoint/v1) -eq 200 ] ; do \
+		printf '.' ; \
+		sleep 1 ; \
+		counter=$$((counter + 1)) ; \
+		[ $$counter -eq $$timeout ] && break || true ; \
+	done && \
+	[ $$counter -eq $$timeout ] && $$(echo "Operation timed out!" && exit 1) || echo "Ready"
 
 weaviate.get.endpoint:
 	@endpoint=$$(aws ssm get-parameters --names "/${ORGANIZATION}/${APP_NAME}/WeaviateEndpoint" | jq -r '.Parameters[0].Value') && \
