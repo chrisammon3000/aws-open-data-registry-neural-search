@@ -19,7 +19,7 @@ Semantic search of [AWS Open Data Registry](https://registry.opendata.aws/) data
 		* [Update the Docker Compose File](#UpdatetheDockerComposeFile)
 		* [Run the Docker Compose File](#RuntheDockerComposeFile)
 * [Usage](#Usage)
-	* [Makefile Usage](#MakefileUsage)
+	* [Makefile](#Makefile)
 	* [Docker](#Docker)
 	* [AWS Deployment](#AWSDeployment)
 	* [Weaviate](#Weaviate)
@@ -225,7 +225,7 @@ docker-compose up -d
 
 ## <a name='Usage'></a>Usage
 
-### <a name='MakefileUsage'></a>Makefile Usage
+### <a name='Makefile'></a>Makefile
 ```bash
 # Deploy and run the app
 make app
@@ -278,15 +278,17 @@ Run the application.
 docker run -d --env-file ../.env load_odr:latest
 ```
 
-### <a name='AWSDeployment'></a>AWS Deployment
-Once an AWS profile is configured and environment variables are available, the application can be deployed using `make`.
-```bash
-make deploy
-```
-
 ### <a name='Weaviate'></a>Weaviate
 
 #### <a name='CreatetheSchema'></a>Create the Schema
+```bash
+make weaviate.schema.create
+```
+
+#### <a name='DeletetheSchema'></a>Delete the Schema
+```bash
+make weaviate.schema.delete
+```
 
 ### <a name='CDKCommands'></a>CDK Commands
 
