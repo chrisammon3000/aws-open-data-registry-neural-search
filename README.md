@@ -306,7 +306,7 @@ make weaviate.schema.delete
 
 ## <a name='ReferencesLinks'></a>References & Links
 - [AWS Open Data Registry](https://registry.opendata.aws/)
-- [Weaviate Docuentation](https://www.semi.technology/developers/weaviate/current/index.html)
+- [Weaviate Documentation](https://www.semi.technology/developers/weaviate/current/index.html)
 - [Weaviate GraphQL API](https://weaviate.io/developers/weaviate/current/graphql-references/index.html)
 - [Weaviate Docker Compose](https://weaviate.io/developers/weaviate/installation/docker-compose)
 

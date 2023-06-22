@@ -66,8 +66,8 @@ def render_results(datasets, limit=None, sort_by_distance=False):
             if dataset['hasPublication'] is not None:
                 for publication in dataset['hasPublication']:
                     st.markdown(f"**{publication['title']}**")
-                    st.markdown(f"{publication['url']}")
                     st.markdown(f"{publication['authorName']}")
+                    st.markdown(f"{publication['url']}")
                     st.markdown("------------")
         with st.expander("**Resources**"):
             if dataset['hasResource'] is not None:
