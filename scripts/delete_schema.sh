@@ -15,7 +15,12 @@ if [ -z "$WEAVIATE_ENDPOINT" ]; then
     exit 1
 fi
 
-classes="Tutorial Publisher Dataset Resource ToolOrApplication Publication Service Tag"
-for class in $classes; do
-    curl -X DELETE "$WEAVIATE_ENDPOINT/v1/schema/$class"
+# classes="Tutorial Publisher Dataset Resource ToolOrApplication Publication Service Tag"
+# for class in $classes; do
+#     curl -X DELETE "$WEAVIATE_ENDPOINT/v1/schema/$class"
+# done
+
+jq -c -r '.classes[].class' "schema.json" | while read -r class; do
+    echo "Deleting $class"
+    curl -o /dev/null -s -w "%{http_code}\n" -X DELETE "$WEAVIATE_ENDPOINT/v1/schema/$class"
 done
